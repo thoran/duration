@@ -3,4 +3,4 @@
 require 'minitest/autorun'
 require 'minitest/spec'
 
-require_relative '../lib/Duration'
+require_relative '../lib/duration'

@@ -1,8 +1,37 @@
 # test/duration/numeric_test.rb
 
 require_relative '../test_helper'
+require_relative '../../lib/Duration/Numeric'
 
 describe Duration::Numeric do
+  describe "nanosecond extensions" do
+    it "creates Nanoseconds from integer" do
+      ns = 1000.nanoseconds
+      _(ns).must_be_instance_of Duration::Nanoseconds
+      _(ns.to_i).must_equal 1000
+    end
+
+    it "supports singular alias" do
+      ns = 1.nanosecond
+      _(ns).must_be_instance_of Duration::Nanoseconds
+      _(ns.to_i).must_equal 1
+    end
+  end
+
+  describe "microsecond extensions" do
+    it "creates Microseconds from integer" do
+      us = 1000.microseconds
+      _(us).must_be_instance_of Duration::Microseconds
+      _(us.to_i).must_equal 1000
+    end
+
+    it "supports singular alias" do
+      us = 1.microsecond
+      _(us).must_be_instance_of Duration::Microseconds
+      _(us.to_i).must_equal 1
+    end
+  end
+
   describe "millisecond extensions" do
     it "creates Milliseconds from integer" do
       ms = 1000.milliseconds

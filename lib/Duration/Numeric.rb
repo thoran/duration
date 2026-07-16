@@ -1,8 +1,20 @@
 # Duration/Numeric.rb
 # Duration::Numeric
 
+require_relative '../duration'
+
 module Duration
   module Numeric
+    def nanoseconds
+      Duration::Nanoseconds.new(self)
+    end
+    alias_method :nanosecond, :nanoseconds
+
+    def microseconds
+      Duration::Microseconds.new(self)
+    end
+    alias_method :microsecond, :microseconds
+
     def milliseconds
       Duration::Milliseconds.new(self)
     end

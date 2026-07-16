@@ -9,6 +9,18 @@ describe Duration::Seconds do
       _(secs.instance_variable_get(:@seconds)).must_equal 60.5
       _(secs.instance_variable_get(:@seconds)).must_be_kind_of Float
     end
+
+    it "holds an integer without coercing to a float" do
+      secs = Duration::Seconds.new(90)
+      _(secs.instance_variable_get(:@seconds)).must_equal 90
+      _(secs.instance_variable_get(:@seconds)).must_be_kind_of Integer
+    end
+
+    it "holds a rational without coercing" do
+      secs = Duration::Seconds.new(Rational(3, 2))
+      _(secs.instance_variable_get(:@seconds)).must_equal Rational(3, 2)
+      _(secs.instance_variable_get(:@seconds)).must_be_kind_of Rational
+    end
   end
 
   describe "conversions" do

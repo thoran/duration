@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 20260718
+
+0.4.0: + Nanoseconds and Microseconds, arithmetic and comparison, exact conversions without a base, and the Numeric monkeypatch made opt-in.
+
+1. + Duration::Nanoseconds
+2. + Duration::Microseconds: This and Nanoseconds are the two units the clock actually speaks, Process.clock_gettime taking :nanosecond and :microsecond directly. Milliseconds was the floor, which left nothing beneath it.
+3. ~ Duration::Common: + #+, #-, and Comparable via #<=>. Arithmetic and comparison happen in the receiver's own unit, so 5.minutes + 30.seconds is 5.5 minutes rather than any number of seconds, and no unit is privileged. Combining with a non-duration raises TypeError, since a bare number has no unit. Comparing with a non-duration returns nil rather than raising, so that == is false.
+4. ~ lib/Duration/*.rb: - the coercion to Float in initialize. The value is held as given, so an Integer stays an Integer and a Rational stays a Rational. A Float stays a Float: the library neither manufactures precision nor discards it.
+5. ~ lib/Duration/*.rb: Conversions divide by a Rational literal (60r, 1000r) rather than an Integer, so a conversion is exact for an exact input. 5.minutes.to_hours holds 1/12, not 0.0833..., and (1.hour - 50.minutes).to_minutes.to_f is 10.0 rather than 9.999999999999998. There is no base and no Float floor in the interior; to_f is the edge where a Float is asked for.
+6. + Duration::Relative#ago, #hence, moved here from Common. Every unit includes it, Months among them, so 1.month.ago remains: it displaces by the mean month, approximate rather than calendar-correct (see 0.3.5's note), as 1.month.to_days is a mean.
+7. + lib/Duration/*.rb: A private #unit per class, naming the unit as a symbol, which Common uses to reach the quantity and to convert the other operand. Explicit rather than reflected from the class name.
+8. ~ lib/Duration.rb: + require the two new classes
+9. ~ lib/Duration.rb: - require Duration/Numeric. BREAKING: require 'Duration' no longer monkeypatches Numeric, so 30.minutes is not available until Duration/Numeric is required. A duration library used directly may want the sugar, but a gem depending on this one should not have Numeric extended from under it.
+10. ~ lib/Duration/Numeric.rb: + require the classes, so require 'Duration/Numeric' stands alone, + nanoseconds and microseconds with their singular aliases.
+11. + test/Duration/Nanoseconds_test.rb, test/Duration/Microseconds_test.rb, test/Duration/Common_test.rb: The new units, and the arithmetic, comparison and exactness.
+12. ~ test/Duration/Numeric_test.rb: + require Duration/Numeric, since it is no longer loaded by default, + the nanosecond and microsecond extensions.
+13. ~ test/Duration/Seconds_test.rb: + that an Integer and a Rational are held without coercion.
+14. ~ lib/Duration.rb --> lib/duration.rb: The one file required from outside the gem, lowercased to match the gem name so require 'duration' resolves on a case-sensitive filesystem and not only on a case-insensitive one. The Duration/ subtree stays PascalCase, reached by exact-case require_relative.
+15. ~ lib/Duration/Numeric.rb: /require_relative '../Duration'/require_relative '../duration'/. The one interior reference reaching back up to the load file, which would otherwise have failed on a case-sensitive filesystem after the rename.
+16. + lib/duration-numeric.rb: A lowercase top-level shim that require_relatives Duration/Numeric, so the sugar opts in via require 'duration-numeric' rather than reaching into the PascalCase namespace with require 'Duration/Numeric'. A file rather than a duration/ directory, so it does not collide with Duration/ where the filesystem is case-insensitive.
+17. ~ test/test_helper.rb: /require_relative '../lib/Duration'/require_relative '../lib/duration'/, following the rename.
+18. ~ README.md: + Philosophy and Loading sections, + the new units, arithmetic and comparison, and the exactness through Rational.
+19. ~ README.md: /require 'Duration'/require 'duration'/, and /require 'Duration/Numeric'/require 'duration-numeric'/ in the Loading section.
+20. ~ Duration::VERSION: /0.3.6/0.4.0/
 
 ## 20260717
 
@@ -11,7 +35,8 @@
 4. ~ duration.rb.gemspec: + Gem::Specification#development_dependencies=
 5. ~ duration.rb.gemspec: + development_dependencies
 6. - test/test_all.rb
-9. ~ Duration::VERSION: /0.3.5/0.3.6/
+7. ~ Duration::VERSION: /0.3.5/0.3.6/
+
 
 ## 20260717
 

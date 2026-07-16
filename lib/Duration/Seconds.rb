@@ -2,12 +2,22 @@
 # Duration::Seconds
 
 require_relative './Common'
+require_relative './Relative'
 require_relative './Milliseconds'
 require_relative './Minutes'
 
 module Duration
   class Seconds
     include Common
+    include Relative
+
+    def to_nanoseconds
+      to_milliseconds.to_nanoseconds
+    end
+
+    def to_microseconds
+      to_milliseconds.to_microseconds
+    end
 
     def to_milliseconds
       Duration::Milliseconds.new(@seconds * 1000)
@@ -18,7 +28,7 @@ module Duration
     end
 
     def to_minutes
-      Duration::Minutes.new(@seconds/60)
+      Duration::Minutes.new(@seconds / 60r)
     end
 
     def to_hours
@@ -42,13 +52,17 @@ module Duration
     end
 
     def to_f
-      @seconds
+      @seconds.to_f
     end
 
     private
 
     def initialize(seconds = nil)
-      @seconds = seconds.to_f
+      @seconds = seconds
+    end
+
+    def unit
+      :seconds
     end
   end
 end
