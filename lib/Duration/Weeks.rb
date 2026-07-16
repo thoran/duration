@@ -2,12 +2,22 @@
 # Duration::Weeks
 
 require_relative './Common'
+require_relative './Relative'
 require_relative './Days'
 require_relative './Months'
 
 module Duration
   class Weeks
     include Common
+    include Relative
+
+    def to_nanoseconds
+      to_days.to_nanoseconds
+    end
+
+    def to_microseconds
+      to_days.to_microseconds
+    end
 
     def to_milliseconds
       to_days.to_milliseconds
@@ -35,7 +45,7 @@ module Duration
 
     def to_months
       # A month is the Gregorian mean: 2629746 seconds against 604800 per week.
-      Duration::Months.new(@weeks * 604800 / 2629746.0)
+      Duration::Months.new(@weeks * 604800 / 2629746r)
     end
 
     def to_i
@@ -43,13 +53,17 @@ module Duration
     end
 
     def to_f
-      @weeks
+      @weeks.to_f
     end
 
     private
 
     def initialize(weeks = nil)
-      @weeks = weeks.to_f
+      @weeks = weeks
+    end
+
+    def unit
+      :weeks
     end
   end
 end

@@ -19,13 +19,13 @@ describe Duration::Months do
     it "converts to milliseconds" do
       ms = subject.to_milliseconds
       _(ms).must_be_instance_of Duration::Milliseconds
-      _(ms.to_f).must_be_close_to 5259492000.0, 0.001
+      _(ms.to_f).must_equal 5259492000.0
     end
 
     it "converts to seconds" do
       secs = subject.to_seconds
       _(secs).must_be_instance_of Duration::Seconds
-      _(secs.to_f).must_be_close_to 5259492.0, 0.001
+      _(secs.to_f).must_equal 5259492.0
     end
 
     it "converts to minutes" do
@@ -58,20 +58,14 @@ describe Duration::Months do
   end
 
   describe "time calculations" do
-    it "calculates ago from current time" do
-      months = Duration::Months.new(1)
-      time_ago = months.ago
-      _(time_ago).must_be_instance_of Time
-      # Approximately 30 days worth of seconds
-      _(Time.now - time_ago).must_be :>, 2500000.0
+    # A month is a calendar operation, not a fixed displacement, so Months
+    # deliberately omits ago/hence. See month.rb for calendar-anchored work.
+    it "does not respond to ago" do
+      _(Duration::Months.new(1)).wont_respond_to :ago
     end
 
-    it "calculates hence from current time" do
-      months = Duration::Months.new(1)
-      time_hence = months.hence
-      _(time_hence).must_be_instance_of Time
-      # Approximately 30 days worth of seconds
-      _(time_hence - Time.now).must_be :>, 2500000.0
+    it "does not respond to hence" do
+      _(Duration::Months.new(1)).wont_respond_to :hence
     end
   end
 end

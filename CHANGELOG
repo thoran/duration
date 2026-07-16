@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## 20260718
+
+0.4.0: Nanoseconds and Microseconds, arithmetic and comparison, exact conversions without a base, and the Numeric monkeypatch made opt-in.
+
+1. + lib/Duration/Nanoseconds.rb, lib/Duration/Microseconds.rb: The two units the clock actually speaks, Process.clock_gettime taking :nanosecond and :microsecond directly. Milliseconds was the floor, which left nothing beneath it.
+2. + lib/Duration/Common.rb: Duration::Common#+, #-, and Comparable via #<=>. Arithmetic and comparison happen in the receiver's own unit, so 5.minutes + 30.seconds is 5.5 minutes rather than any number of seconds, and no unit is privileged. Combining with a non-duration raises TypeError, since a bare number has no unit. Comparing with a non-duration returns nil rather than raising, so that == is false.
+3. ~ lib/Duration/*.rb: - the coercion to Float in initialize. The value is held as given, so an Integer stays an Integer and a Rational stays a Rational. A Float stays a Float: the library neither manufactures precision nor discards it.
+4. ~ lib/Duration/*.rb: Conversions divide by a Rational literal (60r, 1000r) rather than an Integer, so a conversion is exact for an exact input. 5.minutes.to_hours holds 1/12, not 0.0833..., and (1.hour - 50.minutes).to_minutes.to_f is 10.0 rather than 9.999999999999998. There is no base and no Float floor in the interior; to_f is the edge where a Float is asked for.
+5. + lib/Duration/Relative.rb: ago and hence, moved here from Common. Every fixed unit includes it; Months does not, since a month from an anchor date is a calendar operation rather than a fixed displacement, and the mean would mislead. 1.month.ago is gone (see 0.3.5's note), while 1.month.to_days remains as a mean.
+6. ~ lib/Duration/Months.rb: - include Relative (ago/hence), + a class comment on why, and it is slated for removal in 0.5.0.
+7. + lib/Duration/*.rb: A private #unit per class, naming the unit as a symbol, which Common uses to reach the quantity and to convert the other operand. Explicit rather than reflected from the class name.
+8. ~ lib/Duration.rb: + require the two new classes, - require Duration/Numeric. BREAKING: require 'Duration' no longer monkeypatches Numeric, so 30.minutes is not available until Duration/Numeric is required. A duration library used directly may want the sugar, but a gem depending on this one should not have Numeric extended from under it.
+9. ~ lib/Duration/Numeric.rb: + require the classes, so require 'Duration/Numeric' stands alone, + nanoseconds and microseconds with their singular aliases.
+10. + test/Duration/Nanoseconds_test.rb, test/Duration/Microseconds_test.rb, test/Duration/Common_test.rb: The new units, and the arithmetic, comparison and exactness.
+11. ~ test/Duration/Numeric_test.rb: + require Duration/Numeric, since it is no longer loaded by default, + the nanosecond and microsecond extensions.
+12. ~ test/Duration/Seconds_test.rb: + that an Integer and a Rational are held without coercion.
+13. ~ test/Duration/Months_test.rb: /the ago and hence tests/that Months does not respond to ago or hence/.
+14. ~ README.md: + Philosophy and Loading sections, + the new units, arithmetic and comparison, and the exactness through Rational.
+15. ~ Duration::VERSION: /0.3.6/0.4.0/
+
 
 ## 20260717
 
@@ -11,7 +31,8 @@
 4. ~ duration.rb.gemspec: + Gem::Specification#development_dependencies=
 5. ~ duration.rb.gemspec: + development_dependencies
 6. - test/test_all.rb
-9. ~ Duration::VERSION: /0.3.5/0.3.6/
+7. ~ Duration::VERSION: /0.3.5/0.3.6/
+
 
 ## 20260717
 
