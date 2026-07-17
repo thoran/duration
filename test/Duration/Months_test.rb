@@ -19,37 +19,37 @@ describe Duration::Months do
     it "converts to milliseconds" do
       ms = subject.to_milliseconds
       _(ms).must_be_instance_of Duration::Milliseconds
-      _(ms.to_f).must_equal 5241600000.0
+      _(ms.to_f).must_be_close_to 5259492000.0, 0.001
     end
 
     it "converts to seconds" do
       secs = subject.to_seconds
       _(secs).must_be_instance_of Duration::Seconds
-      _(secs.to_f).must_equal 5241600.0
+      _(secs.to_f).must_be_close_to 5259492.0, 0.001
     end
 
     it "converts to minutes" do
       mins = subject.to_minutes
       _(mins).must_be_instance_of Duration::Minutes
-      _(mins.to_f).must_equal 87360.0
+      _(mins.to_f).must_be_close_to 87658.2, 0.1
     end
 
     it "converts to hours" do
       hours = subject.to_hours
       _(hours).must_be_instance_of Duration::Hours
-      _(hours.to_f).must_equal 1456.0
+      _(hours.to_f).must_be_close_to 1460.97, 0.01
     end
 
     it "converts to days" do
       days = subject.to_days
       _(days).must_be_instance_of Duration::Days
-      _(days.to_f).must_be_close_to 60.66, 0.01
+      _(days.to_f).must_be_close_to 60.87375, 0.01
     end
 
     it "converts to weeks" do
       weeks = subject.to_weeks
       _(weeks).must_be_instance_of Duration::Weeks
-      _(weeks.to_f).must_be_close_to 8.66, 0.01
+      _(weeks.to_f).must_be_close_to 8.69625, 0.01
     end
 
     it "returns itself for to_months" do

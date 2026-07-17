@@ -87,6 +87,25 @@ $ gem install duration.rb
 7.months.hence                  # => #<Time:> (now + 7.months.to_seconds.to_f)
 ```
 
+### A Note on Months
+
+`Months` is the odd one out. Every other unit is a fixed quantity with an exact
+ratio to every other, but a month is a calendar operation whose length depends
+on which month. The conversions use the Gregorian mean month (2629746 seconds),
+so they are honest only as a statistical average:
+
+```ruby
+12.months.to_days               # => 365.2425, the Gregorian mean year
+```
+
+Two actual calendar months are anywhere from 59 to 62 days, while the mean gives
+about 60.87 — no particular pair of months. No single constant can be right.
+
+For the same reason `ago` and `hence` are not calendar-correct on `Months`: one
+month before the 15th of March is the 15th of February to a calendar, but the
+mean lands on the 12th. Where the calendar matters, reach for a date-anchored
+type such as month.rb.
+
 ## Contributing
 
 1. Fork it (https://github.com/thoran/duration.rb/fork)

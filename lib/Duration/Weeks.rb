@@ -34,7 +34,8 @@ module Duration
     end
 
     def to_months
-      Duration::Months.new(@weeks / 52 * 12)
+      # A month is the Gregorian mean: 2629746 seconds against 604800 per week.
+      Duration::Months.new(@weeks * 604800 / 2629746.0)
     end
 
     def to_i

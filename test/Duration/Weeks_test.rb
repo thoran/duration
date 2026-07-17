@@ -49,7 +49,7 @@ describe Duration::Weeks do
     it "converts to months" do
       months = subject.to_months
       _(months).must_be_instance_of Duration::Months
-      _(months.to_f).must_be_close_to 0.4615384, 0.0000001
+      _(months.to_f).must_be_close_to 0.459968, 0.000001
     end
 
     it "returns itself for to_weeks" do

@@ -1,0 +1,15 @@
+# CHANGELOG
+
+## 20260717
+
+0.3.5: Months conversion constant bug fix.
+
+1. ~ Duration::Weeks#to_months: The constant asserted a year of 52 weeks, which is 364 days rather than 365.2425, so every conversion through months was short by 1.2425 days a year before months were reached at all. The Gregorian mean month of 2629746 seconds is used instead, against 604800 seconds per week. 12.months.to_days now gives 365.2425 rather than 364.0, and 2.months.to_days gives 60.873749999999994 rather than 60.666666666666664.
+2. ~ Duration::Months#to_weeks: The same constant, in the other direction.
+3. ~ test/Duration/Milliseconds_test.rb, test/Duration/Seconds_test.rb, test/Duration/Minutes_test.rb, test/Duration/Hours_test.rb, test/Duration/Days_test.rb, test/Duration/Weeks_test.rb: The to_months expectations, each of which encoded the old constant.
+4. ~ test/Duration/Months_test.rb: The conversion expectations, each of which encoded the old constant.
+5. ~ test/Duration/Months_test.rb: /must_equal/must_be_close_to/ for the milliseconds and seconds conversions, since 2.months.to_milliseconds arrives at 5259491999.999999 rather than 5259492000.0. The conversion chains through Float, and the drift is inherent to holding a Float rather than anything introduced here. The mean month is an exact number of seconds, so the expectations are exact and it is only the arithmetic which cannot reach them.
+6. + README.md: A note that the Months conversions are a statistical mean, and that ago() and hence() on Months are not calendar-correct, since a corrected constant is still only an average.
+7. + CHANGELOG
+8. ~ duration.rb.gemspec: spec.files to include CHANGELOG.
+9. ~ Duration::VERSION: /0.3.4/0.3.5/

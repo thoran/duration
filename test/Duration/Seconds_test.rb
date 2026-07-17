@@ -49,7 +49,7 @@ describe Duration::Seconds do
     it "converts to months" do
       months = subject.to_months
       _(months).must_be_instance_of Duration::Months
-      _(months.to_f).must_be_close_to 3.4340659e-05, 0.00000001
+      _(months.to_f).must_be_close_to 3.422384e-05, 0.00000001
     end
 
     it "returns itself for to_seconds" do

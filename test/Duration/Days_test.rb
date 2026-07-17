@@ -49,7 +49,7 @@ describe Duration::Days do
     it "converts to months" do
       months = @days.to_months
       _(months).must_be_instance_of Duration::Months
-      _(months.to_f).must_be_close_to 0.06593, 0.00001
+      _(months.to_f).must_be_close_to 0.065710, 0.00001
     end
 
     it "returns itself for to_days" do
