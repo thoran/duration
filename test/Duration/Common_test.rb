@@ -30,6 +30,46 @@ describe Duration::Common do
     end
   end
 
+  describe "multiplication" do
+    it "scales a duration by a number, keeping the unit" do
+      result = 5.minutes * 3
+      _(result).must_be_instance_of Duration::Minutes
+      _(result.to_i).must_equal 15
+    end
+
+    it "raises upon a duration, there being no unit of time squared" do
+      _{5.minutes * 3.minutes}.must_raise TypeError
+    end
+
+    it "raises upon a non-numeric" do
+      _{5.minutes * "3"}.must_raise TypeError
+    end
+  end
+
+  describe "division" do
+    it "scales a duration by a number, keeping the unit" do
+      result = 1.hour / 4
+      _(result).must_be_instance_of Duration::Hours
+      _(result.to_minutes.to_f).must_equal 15.0
+    end
+
+    it "divides exactly rather than as integers" do
+      _(1.second / 3).must_equal Duration::Seconds.new(Rational(1, 3))
+    end
+
+    it "returns the dimensionless ratio of two durations" do
+      _(1.hour / 30.minutes).must_equal 2
+    end
+
+    it "takes the ratio across units exactly" do
+      _(1.second / 3.milliseconds).must_equal Rational(1000, 3)
+    end
+
+    it "raises upon a non-numeric" do
+      _{5.minutes / "3"}.must_raise TypeError
+    end
+  end
+
   describe "comparison" do
     it "compares durations of different units exactly" do
       _(5.minutes).must_equal 300.seconds

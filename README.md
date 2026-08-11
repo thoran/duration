@@ -98,6 +98,20 @@ The examples below use the `Numeric` sugar, so they assume
 90.seconds > 1.minute           # => true
 [1.hour, 30.seconds, 5.minutes].sort
                                 # => [30.seconds, 5.minutes, 1.hour]
+
+# Scaled by a number, a duration stays a duration and keeps its unit:
+5.minutes * 3                   # => #<Minutes @minutes=15>
+1.hour / 4                      # => #<Hours @hours=(1/4)>
+1.second / 3                    # => #<Seconds @seconds=(1/3)>  (not 0)
+
+# Divided by a duration, the units cancel and a plain number is left. It is a
+# Rational when both quantities are exact, as Numeric#quo gives, so it compares
+# and calculates as the number it is; call to_f at the edge.
+1.hour / 30.minutes             # => (2/1)
+1.second / 3.milliseconds       # => (1000/3)
+
+# There is no unit of time squared, so this is refused rather than answered:
+5.minutes * 3.minutes           # => TypeError
 ```
 
 ### Time Calculations

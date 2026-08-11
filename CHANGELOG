@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 20260811
+
+0.5.0: + Multiplication and division, and with them the dimensionless ratio.
+
+1. + Duration::Common#*: a duration times a number is a duration, in the receiver's own unit as the rest of the arithmetic is. A duration times a duration raises TypeError, there being no unit of time squared: refused rather than quietly given some plausible answer.
+2. + Duration::Common#/: divided by a number a duration stays a duration; divided by a duration it becomes the dimensionless ratio of the two, the units having cancelled. That ratio is the shape of a rate or a speedup, and until now it could not be written at all: a timing had to be dropped back to a bare number before it could be divided, which is the point at which its unit is lost.
+3. + Duration::Common#scale and #ratio, private, being the two halves of what #* and #/ mean. Division goes through Numeric#quo rather than #/, so that an Integer quantity divides exactly: 1.quo(3) is (1/3) where 1 / 3 is 0. A Float quantity stays a Float, this library manufacturing no precision it was not given.
+4. + test/Duration/Common_test.rb: multiplication and division, including that 1.second / 3 holds a third rather than nothing, that 1.hour / 30.minutes is 2, and that 1.second / 3.milliseconds is exactly 1000/3.
+5. ~ Duration::VERSION: /0.4.0/0.5.0/
+
+
 ## 20260718
 
 0.4.0: + Nanoseconds and Microseconds, arithmetic and comparison, exact conversions without a base, and the Numeric monkeypatch made opt-in.
