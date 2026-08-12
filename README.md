@@ -138,8 +138,8 @@ the calendar. Its conversions use the Gregorian mean month (2629746 seconds),
 so they are honest only as a statistical average, never as calendar-correct
 arithmetic. Its `ago`/`hence` inherit this — they displace by the mean month,
 so they are approximate rather than calendar-correct; reach for a
-calendar-anchored type such as `month.rb` when that matters. `Months` is slated
-for removal in 0.5.0.
+calendar-anchored type such as `month.rb` when that matters. `Months` is
+therefore slated for removal.
 
 ## Contributing
 

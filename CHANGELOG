@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 20260812
+
+0.5.1: + VERSION test.
+
+1. + test/Duration/VERSION_test.rb: Ensure that VERSION is a string, that it has three dotted numbers, and that it matches the newest entry in the CHANGELOG. A release edits both files and this now ensure that one moves with the other.
+2. + .gitignore
+3. ~ README.md: /Months is slated for removal in 0.5.0/Months is therefore slated for removal/, 0.5.0 having been and gone with Months still in place.
+4. ~ Duration::VERSION: /0.5.0/0.5.1/
+
+
 ## 20260811
 
 0.5.0: + Multiplication and division, and with them the dimensionless ratio.
