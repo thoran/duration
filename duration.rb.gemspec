@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.version = Duration::VERSION
 
   spec.summary = "Objects for handling durations of time."
-  spec.description = "Objects for handling durations of time."
+  spec.description = "The unit is the class rather than a decoration upon a number of seconds, so a Minutes holds minutes and no unit is privileged as a base. Nothing is normalised at construction and conversions divide by exact ratios, so an Integer or a Rational stays exact the whole way through, with to_f left for the edge."
 
   spec.author = 'thoran'
   spec.email = 'code@thoran.com'

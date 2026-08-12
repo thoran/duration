@@ -2,6 +2,15 @@
 
 ## 20260812
 
+0.5.2: + gemspec test.
+
+1. + test/gemspec_test.rb: Ensure that the specification validates, that no date is pinned, that the version comes from Duration::VERSION, and that the runtime and development dependencies are those expected.
+2. ~ duration.rb.gemspec: /a description identical to the summary/a description of its own/. Found by the test above upon its first run, spec.validate having warned of it. The summary says what the gem is; the description now says how it goes about it.
+3. ~ Duration::VERSION: /0.5.1/0.5.2/
+
+
+## 20260812
+
 0.5.1: + VERSION test.
 
 1. + test/Duration/VERSION_test.rb: Ensure that VERSION is a string, that it has three dotted numbers, and that it matches the newest entry in the CHANGELOG. A release edits both files and this now ensure that one moves with the other.
