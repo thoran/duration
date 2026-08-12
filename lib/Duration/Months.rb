@@ -1,9 +1,7 @@
 # Duration/Months.rb
 # Duration::Months
 
-require_relative './Common'
-require_relative './Relative'
-require_relative './Weeks'
+require_relative '../duration'
 
 module Duration
   # A month is not a fixed quantity: its length depends on the calendar. The

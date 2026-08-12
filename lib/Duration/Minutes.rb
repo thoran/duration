@@ -1,10 +1,7 @@
 # Duration/Minutes.rb
 # Duration::Minutes
 
-require_relative './Common'
-require_relative './Relative'
-require_relative './Seconds'
-require_relative './Hours'
+require_relative '../duration'
 
 module Duration
   class Minutes

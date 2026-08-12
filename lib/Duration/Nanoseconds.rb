@@ -1,9 +1,7 @@
 # Duration/Nanoseconds.rb
 # Duration::Nanoseconds
 
-require_relative './Common'
-require_relative './Relative'
-require_relative './Microseconds'
+require_relative '../duration'
 
 module Duration
   class Nanoseconds

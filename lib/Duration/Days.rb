@@ -1,10 +1,7 @@
 # Duration/Days.rb
 # Duration::Days
 
-require_relative './Common'
-require_relative './Relative'
-require_relative './Hours'
-require_relative './Weeks'
+require_relative '../duration'
 
 module Duration
   class Days

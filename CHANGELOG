@@ -2,6 +2,19 @@
 
 ## 20260812
 
+0.6.0: The unit classes are now autoloaded so as to avoid circular loading messages when running the tests. It's faster too!
+
+1. + lib/duration.rb: Autoload each unit file, and Common and Relative.
+2. ~ lib/Duration/*.rb: - require_relative './Common', './Relative'
+3. ~ lib/Duration/*.rb: + require_relative '../duration'. Each unit had required both of its neighbours, so that every adjacent pair was a cycle and Ruby warned upon each under -w. The ring was connected besides, so requiring any one unit dragged in eleven files of the thirteen and no part of the gem could be left unread. Requiring one now brings five, and the rest arrive as they are named.
+4. ~ lib/duration.rb: Add a note why VERSION is required and not declared, being the one exception.
+5. ~ README.md: Add a line in the Loading section.
+6. + test/loading_test.rb: that a single unit file required alone still converts, that a unit never named is never read, that one named is, and that the whole loads without warning under -w. Each runs in a process of its own, the test helper having already loaded everything in this one.
+7. ~ Duration::VERSION: /0.5.2/0.6.0/
+
+
+## 20260812
+
 0.5.2: + gemspec test.
 
 1. + test/gemspec_test.rb: Ensure that the specification validates, that no date is pinned, that the version comes from Duration::VERSION, and that the runtime and development dependencies are those expected.

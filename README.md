@@ -52,8 +52,12 @@ require 'duration-numeric'  # opt in to the Numeric sugar (5.minutes, etc.),
 ```
 
 The examples below use the `Numeric` sugar, so they assume
-`require 'duration-numeric'`. Without it, construct durations directly with
-`Duration::Minutes.new(5)` and friends.
+`require 'duration-numeric'`. Without it durations are constructed directly with
+`Duration::Minutes.new(5)` and so on.
+
+Either require declares where the unit classes are without reading them. A unit
+file is read when its class is first named, so a program dealing in seconds and
+minutes reads the files for seconds and minutes and leaves the rest unread.
 
 ## Usage
 
