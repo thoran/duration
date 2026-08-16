@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 20260816
+
+0.6.1: Documentation fixes for Months, which said one thing in the README and another in the class comment, and showed a third in the examples.
+
+1. ~ lib/Duration/Months.rb: /Months is slated for removal in 0.5.0/Months is therefore slated for removal/. 0.5.1 dropped the version from README.md, 0.5.0 having been and gone with Months still in place, but left the class comment still naming it, so the two have disagreed since and the comment is now two minor versions stale.
+2. ~ README.md: + 6.months.ago and 6.months.hence to the Time Calculations examples, each with the mean month noted beside it. Every other unit was shown and Months alone omitted, which implies that Months does not answer ago and hence, when 0.4.0 decided that it does and A Note on Months says as much eleven lines below. The examples are what is read first, so the omission was the louder statement of the two.
+3. ~ Duration::VERSION: /0.6.0/0.6.1/
+
+
 ## 20260812
 
 0.6.0: The unit classes are now autoloaded so as to avoid circular loading messages when running the tests. It's faster too!

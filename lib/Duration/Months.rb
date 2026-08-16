@@ -11,7 +11,7 @@ module Duration
   #
   # ago and hence (via Relative) inherit the same caveat: they displace by the
   # mean month rather than an actual calendar month, so they are approximate,
-  # not calendar-correct. Months is slated for removal in 0.5.0.
+  # not calendar-correct. Months is therefore slated for removal.
   class Months
     include Common
     include Relative

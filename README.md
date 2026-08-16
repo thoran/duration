@@ -127,12 +127,19 @@ minutes reads the files for seconds and minutes and leaves the rest unread.
 5.days.ago                      # => #<Time:> (now - 5.days.to_seconds.to_f)
 6.weeks.ago                     # => #<Time:> (now - 6.weeks.to_seconds.to_f)
 
+# Months too, but by the Gregorian mean month rather than a calendar month, so
+# the result is approximate. See A Note on Months below.
+6.months.ago                    # => #<Time:> (now - 6.months.to_seconds.to_f)
+
 # The future
 2.seconds.hence                 # => #<Time:> (now + 2.seconds.to_seconds.to_f)
 3.minutes.hence                 # => #<Time:> (now + 3.minutes.to_seconds.to_f)
 4.hours.hence                   # => #<Time:> (now + 4.hours.to_seconds.to_f)
 5.days.hence                    # => #<Time:> (now + 5.days.to_seconds.to_f)
 6.weeks.hence                   # => #<Time:> (now + 6.weeks.to_seconds.to_f)
+
+# Again by the mean month, and so approximate:
+6.months.hence                  # => #<Time:> (now + 6.months.to_seconds.to_f)
 ```
 
 ### A Note on Months
