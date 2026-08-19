@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 20260819
+
+0.6.2: ~ duration.rb.gemspec: spec.files reordered, the globs first.
+
+1. ~ duration.rb.gemspec: spec.files reordered, the two Dir globs first and the loose files alphabetically after them, as moby and measurand have it. The globs are what the gem is and the rest is paperwork, so adding a file to the paperwork now never disturbs them. This gemspec had sorted the globs in among the loose files by path, which monotonic.rb shared. The same 35 files ship, in the same gem; only the order in the source changes.
+2. ~ duration.rb.gemspec: + a trailing comma to the last element of spec.files, which had none. Without it the reorder would have moved an uncommaed line into the middle of the list and the gemspec would not have parsed.
+3. ~ Duration::VERSION: /0.6.1/0.6.2/
+
+
 ## 20260816
 
 0.6.1: Documentation fixes for Months, which said one thing in the README and another in the class comment, and showed a third in the examples.
