@@ -64,15 +64,15 @@ minutes reads the files for seconds and minutes and leaves the rest unread.
 ### Basic Duration Creation
 ```ruby
 # Create durations using convenience methods
-500.nanoseconds         # => #<Nanoseconds @nanoseconds=500>
-500.microseconds        # => #<Microseconds @microseconds=500>
-200.milliseconds        # => #<Milliseconds @milliseconds=200>
-1.second                # => #<Seconds @seconds=1>
-30.minutes              # => #<Minutes @minutes=30>
-2.hours                 # => #<Hours @hours=2>
-7.days                  # => #<Days @days=7>
-4.weeks                 # => #<Weeks @weeks=4>
-6.months                # => #<Months @months=6>
+500.nanoseconds         # => Duration::Nanoseconds(500)
+500.microseconds        # => Duration::Microseconds(500)
+200.milliseconds        # => Duration::Milliseconds(200)
+1.second                # => Duration::Seconds(1)
+30.minutes              # => Duration::Minutes(30)
+2.hours                 # => Duration::Hours(2)
+7.days                  # => Duration::Days(7)
+4.weeks                 # => Duration::Weeks(4)
+6.months                # => Duration::Months(6)
 ```
 
 ### Conversions
@@ -83,11 +83,44 @@ minutes reads the files for seconds and minutes and leaves the rest unread.
 
 # Convert between units. The result is exact (a Rational internally) when the
 # input is exact; call to_f at the edge for a float.
-90.minutes.to_hours             # => #<Hours @hours=(3/2)>
+90.minutes.to_hours             # => Duration::Hours((3/2))
 90.minutes.to_hours.to_f        # => 1.5
 1.5.hours.to_minutes.to_i       # => 90
 1.day.to_seconds.to_i           # => 86400
 5.minutes.to_hours.to_f         # => 0.08333333333333333
+```
+
+### Rendering
+
+`to_s` names the quantity and the unit — the unit being the class, naming it says
+which duration this is without repeating it.
+
+```ruby
+45.days.to_s            # => "45 days"
+1.day.to_s              # => "1 day"
+1.5.hours.to_s          # => "1.5 hours"
+```
+
+The quantity prints as it is held. A Rational which came out whole prints as a whole
+number, and one which did not stays a ratio rather than being expanded into a decimal
+it is not:
+
+```ruby
+45.days.to_weeks.to_s   # => "45/7 weeks"
+90.minutes.to_hours.to_s  # => "3/2 hours"
+```
+
+Call `to_f` where a decimal is wanted, as elsewhere — the rounding happens upon
+request and not before.
+
+`inspect` is the other form: the class and the quantity as it is actually held. It is
+the one place an `Integer` 45 and a `Rational` 45/1 can be told apart, `to_s` rendering
+both as `"45 days"`.
+
+```ruby
+45.days.inspect             # => "Duration::Days(45)"
+45.days.to_weeks.inspect    # => "Duration::Weeks((45/7))"
+{held_for: 45.days}.inspect # => "{held_for: Duration::Days(45)}"
 ```
 
 ### Arithmetic and Comparison
@@ -101,7 +134,7 @@ minutes reads the files for seconds and minutes and leaves the rest unread.
 5.minutes == 300.seconds        # => true
 90.seconds > 1.minute           # => true
 [1.hour, 30.seconds, 5.minutes].sort
-                                # => [30.seconds, 5.minutes, 1.hour]
+                                # => [Duration::Seconds(30), Duration::Minutes(5), Duration::Hours(1)]
 
 # Scaled by a number, a duration stays a duration and keeps its unit:
 5.minutes * 3                   # => #<Minutes @minutes=15>

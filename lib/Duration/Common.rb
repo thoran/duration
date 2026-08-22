@@ -36,6 +36,24 @@ module Duration
       quantity <=> other.send(:"to_#{unit}").quantity
     end
 
+    # The unit is the class, so naming it says which duration this is without
+    # repeating the class: 45 days rather than #<Duration::Days:0x000... The
+    # quantity is rendered as it is held, an exact Rational staying exact, this
+    # library manufacturing no precision it was not given and discarding none
+    # it was.
+    def to_s
+      "#{rendered_quantity} #{quantity == 1 ? unit.to_s.chomp('s') : unit}"
+    end
+
+    # The class and the quantity as it is actually held, after measurand: to_s
+    # is what a reader wants and inspect is what the object is.  It is the one
+    # place the difference between an Integer 45 and a Rational 45/1 shows,
+    # which in a library this careful about exactness is worth being able to
+    # see.
+    def inspect
+      "#{self.class}(#{quantity.inspect})"
+    end
+
     protected
 
     def quantity
@@ -43,6 +61,13 @@ module Duration
     end
 
     private
+
+    # A Rational which came out whole prints as its numerator, since 45/1 days
+    # says nothing 45 days does not.  A Rational which did not stays a ratio:
+    # 45/7 weeks is what 45 days is, and 6.428571428571429 is not.
+    def rendered_quantity
+      quantity.is_a?(Rational) && quantity.denominator == 1 ? quantity.numerator.to_s : quantity.to_s
+    end
 
     def combine(operator, other)
       unless other.is_a?(Duration::Common)

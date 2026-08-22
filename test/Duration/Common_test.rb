@@ -98,4 +98,58 @@ describe Duration::Common do
       _((1.hour - 50.minutes).to_minutes.to_f).must_equal 10.0
     end
   end
+
+  describe "#to_s" do
+    it "names the quantity and the unit" do
+      _(45.days.to_s).must_equal '45 days'
+      _(500.nanoseconds.to_s).must_equal '500 nanoseconds'
+    end
+
+    it "drops the plural at one" do
+      _(1.day.to_s).must_equal '1 day'
+      _(1.month.to_s).must_equal '1 month'
+    end
+
+    it "keeps a float a float" do
+      _(1.5.hours.to_s).must_equal '1.5 hours'
+    end
+
+    it "prints a whole Rational as a whole number" do
+      _(Duration::Days.new(45r).to_s).must_equal '45 days'
+    end
+
+    it "keeps an exact ratio a ratio rather than expanding it" do
+      # 45 days is exactly 45/7 weeks, and 6.428571428571429 is not.
+      _(45.days.to_weeks.to_s).must_equal '45/7 weeks'
+    end
+
+    it "reads the unit from the class rather than repeating it" do
+      _(90.minutes.to_hours.to_s).must_equal '3/2 hours'
+    end
+  end
+
+  describe "#inspect" do
+    it "names the class and the quantity as held" do
+      _(45.days.inspect).must_equal 'Duration::Days(45)'
+      _(1.5.hours.inspect).must_equal 'Duration::Hours(1.5)'
+    end
+
+    it "carries no address or ivar dump" do
+      _(45.days.inspect).wont_match(/0x|@days/)
+    end
+
+    it "shows an exact quantity as the Rational it is, where to_s does not" do
+      _(45.days.to_weeks.to_s).must_equal '45/7 weeks'
+      _(45.days.to_weeks.inspect).must_equal 'Duration::Weeks((45/7))'
+    end
+
+    it "distinguishes a whole Rational from an Integer, where to_s cannot" do
+      _(Duration::Days.new(45r).to_s).must_equal 45.days.to_s
+      _(Duration::Days.new(45r).inspect).wont_equal 45.days.inspect
+    end
+
+    it "reaches a duration held inside a collection" do
+      _({held_for: 45.days}.inspect).must_equal '{held_for: Duration::Days(45)}'
+    end
+  end
 end

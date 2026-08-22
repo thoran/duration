@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 20260822
+
+0.7.0: + Duration::Common#to_s, #inspect.
+
+1. + Duration::Common#to_s: the quantity and the unit, as "45 days". The unit is the class, so naming it says which duration this is without repeating the class. A quantity of one drops the plural.
+2. + Duration::Common#inspect: the class and the quantity as it is held, as "Duration::Days(45)", after measurand's. Collections call inspect upon their elements, which is where the default ivar-and-address form was most often met. It is the one place an Integer 45 and a Rational 45/1 can be told apart, #to_s rendering both as "45 days".
+3. ~ README.md: the eleven `# =>` comments which render a duration, being what irb prints and so #inspect, brought to the form it now returns. They had shown an approximation of the default, `#<Nanoseconds @nanoseconds=500>`, which was never quite what was printed either; + a Rendering section for #to_s and #inspect.
+4. ~ Duration::VERSION: /0.6.2/0.7.0/
+
+
 ## 20260819
 
 0.6.2: ~ duration.rb.gemspec: spec.files reordered, the globs first.
