@@ -2,6 +2,14 @@
 
 ## 20260822
 
+0.7.1: + test/duration-numeric_test.rb.
+
+1. + test/duration-numeric_test.rb: that requiring the file gives the Numeric sugar, brings the core with it, and names nothing at the top level. Duration::Numeric was covered by test/Duration/Numeric_test.rb, which requires the module directly and so steps over the file which requires it for you — a path nothing else took, where a wrong require would have shipped unnoticed. The third runs in a process of its own, being a question about what a fresh top level holds.
+2. ~ Duration::VERSION: /0.7.0/0.7.1/
+
+
+## 20260822
+
 0.7.0: + Duration::Common#to_s, #inspect.
 
 1. + Duration::Common#to_s: the quantity and the unit, as "45 days". The unit is the class, so naming it says which duration this is without repeating the class. A quantity of one drops the plural.
