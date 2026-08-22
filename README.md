@@ -49,15 +49,95 @@ require 'duration'          # the duration classes only
 
 require 'duration-numeric'  # opt in to the Numeric sugar (5.minutes, etc.),
                             # which monkeypatches Numeric
+
+require 'duration-classes'  # opt in to the unit classes at the top level
+                            # (Days rather than Duration::Days)
 ```
+
+Those are three ways in rather than three lines to write. Each stands alone, the
+two opt-in files requiring the core themselves, so `require 'duration-classes'` is
+a complete line and wants no `require 'duration'` above it. They are independent of
+each other, so a program which wants both the sugar and the top-level names asks
+for both.
 
 The examples below use the `Numeric` sugar, so they assume
 `require 'duration-numeric'`. Without it durations are constructed directly with
 `Duration::Minutes.new(5)` and so on.
 
-Either require declares where the unit classes are without reading them. A unit
-file is read when its class is first named, so a program dealing in seconds and
-minutes reads the files for seconds and minutes and leaves the rest unread.
+The first two requires declare where the unit classes are without reading them. A
+unit file is read when its class is first named, so a program dealing in seconds
+and minutes reads the files for seconds and minutes and leaves the rest unread.
+The third is different, and says so below.
+
+### Naming the classes
+
+The unit classes are `Duration::Days` and its siblings. With the sugar,
+construction never names one — `45.days` reaches the same class — so the prefix is
+left for the two places a constant is unavoidable, type checks and dispatch —
+`value.is_a?(Duration::Common)`, or a `case` over the units.
+
+`require 'duration-classes'` takes the nine unit classes and names them at the top
+level, so those read as `Days` and `Hours`. It is the counterpart to the `Numeric`
+sugar — that one adds nine methods, this one nine constants — and like it, it is
+opt-in by require rather than something `require 'duration'` does to you.
+
+```ruby
+require 'duration-classes'
+
+Days.new(45)                # => Duration::Days(45)
+```
+
+The classes keep their own names, so `inspect` is unchanged. `Common`, `Relative`
+and `VERSION` stay where they are: the first two are what a type check names, and
+`VERSION` is a word an including program is likely to want for itself.
+
+**It is eager**, where the sugar is not: requiring it reads all nine unit files,
+against the two a sugar-only program reads. A constant assignment resolves at once
+where a method body waits to be called, so it cannot be otherwise — the price of
+asking for all nine names, charged only to a program which asks.
+
+**It assigns into the top level**, so a name already taken is replaced — with a
+warning, at least. The order without a warning is the one to watch:
+
+```ruby
+require 'duration-classes'
+class Days                      # not a class of your own — this reopens
+  def self.mine; end            # Duration::Days and adds a method to it
+end
+```
+
+`class Days` finds the name bound and reopens what it names, so a program which
+meant to declare its own has extended the gem's instead. Where a program has its own
+vocabulary to protect, reach for the units through `Duration::`.
+
+Where fewer names will do, naming them yourself costs nothing and stays lazy:
+
+```ruby
+Days = Duration::Days
+Hours = Duration::Hours
+```
+
+Two files are read and two names are taken, and the pair reads as a declaration of
+which units this program deals in — the same thing the loading story above says
+about the files.
+
+`include Duration` is the remaining way in, and the last to reach for. Inside a
+class it is scoped and unremarkable, and it brings `Common` along, which
+`duration-classes` does not:
+
+```ruby
+class Portfolio
+  include Duration
+  def hold_period; Days.new(45); end
+  def duration?(value); value.is_a?(Common); end
+end
+```
+
+At the top level it includes into `Object`, putting all twelve constants into
+global scope — the nine units, `Common`, `Relative` and `VERSION`. A constant of
+your own still wins there, but a name you never gave resolves silently rather than
+raising, and a second library included the same way and carrying the same name wins
+by include order alone. `Common` is the likeliest to be met twice.
 
 ## Usage
 
