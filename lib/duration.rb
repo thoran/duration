@@ -17,6 +17,7 @@ module Duration
   autoload :Days,         File.expand_path('Duration/Days', __dir__)
   autoload :Weeks,        File.expand_path('Duration/Weeks', __dir__)
   autoload :Months,       File.expand_path('Duration/Months', __dir__)
+  autoload :ISO8601,      File.expand_path('Duration/ISO8601', __dir__)
 end
 
 # VERSION is required rather than autoloaded, and is the one exception, as there nothing which will load it at runtime.

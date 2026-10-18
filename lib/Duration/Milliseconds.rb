@@ -7,6 +7,7 @@ module Duration
   class Milliseconds
     include Common
     include Relative
+    extend ISO8601
 
     def to_nanoseconds
       to_microseconds.to_nanoseconds

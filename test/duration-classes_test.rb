@@ -17,8 +17,8 @@ describe 'duration-classes' do
     _(Days.name).must_equal 'Duration::Days'
   end
 
-  it "leaves Common, Relative and VERSION where they are" do
-    _([:Common, :Relative, :VERSION].none?{|name| Object.const_defined?(name, false)}).must_equal true
+  it "leaves Common, Relative, ISO8601 and VERSION where they are" do
+    _([:Common, :Relative, :ISO8601, :VERSION].none?{|name| Object.const_defined?(name, false)}).must_equal true
   end
 
   # These two want a process of its own: each turns upon what the top level held

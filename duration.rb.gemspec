@@ -15,8 +15,8 @@ Gem::Specification.new do |spec|
 
   spec.author = 'thoran'
   spec.email = 'code@thoran.com'
-  spec.homepage = 'http://github.com/thoran/duration.rb'
-  spec.license = 'Ruby'
+  spec.homepage = 'http://github.com/thoran/duration'
+  spec.license = 'MIT'
 
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.5'
@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
     'CHANGELOG',
     'duration.rb.gemspec',
     'Gemfile',
+    'LICENSE',
     'Rakefile',
     'README.md',
   ].flatten

@@ -1,4 +1,25 @@
-# CHANGELOG
+# duration/CHANGELOG
+
+## 20261018
+
+0.9.0: + Duration::ISO8601, which gives every unit from_iso8601.
+
+1. + lib/Duration/ISO8601.rb: from_iso8601 reads P#W#DT#H#M#S, any subset, into the unit of the class it extends, each component written being made in its own unit and summed into that one. Years and months raise ArgumentError, having no fixed length. A named constructor rather than a String accepted by new, so as no one format claims every string passed to new.
+2. ~ lib/Duration/{Nanoseconds,Microseconds,Milliseconds,Seconds,Minutes,Hours,Days,Weeks,Months}.rb: + extend ISO8601.
+3. ~ lib/Duration/Months.rb: + to the class comment, that from_iso8601 reads by the mean month and refuses P1M.
+4. ~ lib/duration.rb: + autoload :ISO8601.
+5. ~ lib/duration-classes.rb: + ISO8601 to the constants left where they are.
+6. + test/Duration/ISO8601_test.rb
+7. ~ test/loading_test.rb: + that from_iso8601 reads only the units a string names.
+8. ~ test/duration-classes_test.rb: + ISO8601 to the constants left where they are.
+9. ~ README.md: + Parsing ISO 8601; ~ Naming the classes: + ISO8601 to the constants left where they are, and /twelve constants/thirteen constants/ for a top-level include Duration; ~ Contributing: the fork link names the repository as renamed.
+10. ~ duration.rb.gemspec: spec.license /Ruby/MIT/. LICENSE has been MIT since 0.3.0 added it.
+11. ~ duration.rb.gemspec: spec.files + 'LICENSE', which had not been shipped.
+12. ~ duration.rb.gemspec: spec.homepage names the repository as renamed, github.com/thoran/duration.
+13. /LICENSE.txt/LICENSE/: ~ /Copyright (c) 2025/Copyright (c) 2011-2026/
+14. ~ CHANGELOG: the heading names the gem, as duration/CHANGELOG.
+15. ~ Duration::VERSION: /0.8.0/0.9.0/
+
 
 ## 20260822
 

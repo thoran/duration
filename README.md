@@ -87,9 +87,10 @@ require 'duration-classes'
 Days.new(45)                # => Duration::Days(45)
 ```
 
-The classes keep their own names, so `inspect` is unchanged. `Common`, `Relative`
-and `VERSION` stay where they are: the first two are what a type check names, and
-`VERSION` is a word an including program is likely to want for itself.
+The classes keep their own names, so `inspect` is unchanged. `Common`, `Relative`,
+`ISO8601` and `VERSION` stay where they are: the first three are mixins rather than
+classes, `Common` and `Relative` being what a type check names, and `VERSION` is a
+word an including program is likely to want for itself.
 
 **It is eager**, where the sugar is not: requiring it reads all nine unit files,
 against the two a sugar-only program reads. A constant assignment resolves at once
@@ -133,11 +134,11 @@ class Portfolio
 end
 ```
 
-At the top level it includes into `Object`, putting all twelve constants into
-global scope — the nine units, `Common`, `Relative` and `VERSION`. A constant of
-your own still wins there, but a name you never gave resolves silently rather than
-raising, and a second library included the same way and carrying the same name wins
-by include order alone. `Common` is the likeliest to be met twice.
+At the top level it includes into `Object`, putting all thirteen constants into
+global scope — the nine units, `Common`, `Relative`, `ISO8601` and `VERSION`. A
+constant of your own still wins there, but a name you never gave resolves silently
+rather than raising, and a second library included the same way and carrying the
+same name wins by include order alone. `Common` is the likeliest to be met twice.
 
 ## Usage
 
@@ -169,6 +170,34 @@ by include order alone. `Common` is the likeliest to be met twice.
 1.day.to_seconds.to_i           # => 86400
 5.minutes.to_hours.to_f         # => 0.08333333333333333
 ```
+
+### Parsing ISO 8601
+
+Every unit reads an ISO 8601 duration, as APIs such as YouTube's give them, with
+`from_iso8601`. Any subset of weeks, days, hours, minutes and seconds is accepted,
+and the result is in the unit asked of.
+
+```ruby
+Duration::Seconds.from_iso8601('PT1H2M3S')  # => Duration::Seconds(3723)
+Duration::Minutes.from_iso8601('PT1H2M3S')  # => Duration::Minutes((1241/20))
+Duration::Days.from_iso8601('P2W')          # => Duration::Days(14)
+Duration::Seconds.from_iso8601('P0D')       # => Duration::Seconds(0)
+```
+
+Each component written is made in its own unit and summed into the one asked of,
+so the result is what the conversions give: exact, and an `Integer` where they
+divide evenly. Seconds is the unit in which every such string is a whole number.
+
+It is a named constructor rather than a `String` accepted by `new`, so the
+constructor still takes a quantity and holds it, and a string in some other form
+is left free to have a constructor of its own.
+
+A week is seven days and a day 24 hours, both being fixed lengths. Years and months
+are not, so `P1Y` and `P1M` raise `ArgumentError` rather than being counted by some
+average; `M` is minutes only after the `T`. Anything else which is not of the form
+`P#W#DT#H#M#S` raises `ArgumentError` too, which includes a fraction (`PT1.5S`) and
+a sign (`-P1D`). `Months` reads weeks and days by the mean month, as its conversions
+do, and refuses `P1M` with the rest: a calendar month is not the mean month.
 
 ### Rendering
 
@@ -267,7 +296,7 @@ therefore slated for removal.
 
 ## Contributing
 
-1. Fork it (https://github.com/thoran/duration.rb/fork)
+1. Fork it (https://github.com/thoran/duration/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

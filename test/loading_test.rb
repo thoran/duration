@@ -25,6 +25,11 @@ describe 'loading' do
       .must_equal('1')
   end
 
+  it "reads only the units a string names" do
+    _(ruby('require "duration.rb"; Duration::Seconds.from_iso8601("PT1H"); print $LOADED_FEATURES.grep(/Months|Weeks|Days/).size')) \
+      .must_equal('0')
+  end
+
   it "loads without warning under -w, no unit requiring another" do
     _(ruby('require "duration.rb"; Duration::Months.new(1).to_nanoseconds; print "ok"', '-w')) \
       .must_equal('ok')
