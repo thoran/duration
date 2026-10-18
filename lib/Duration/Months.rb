@@ -11,13 +11,14 @@ module Duration
   #
   # ago and hence (via Relative) inherit the same caveat: they displace by the
   # mean month rather than an actual calendar month, so they are approximate,
-  # not calendar-correct. from_iso8601 (via ISO8601) likewise reads weeks and
-  # days into mean months, and refuses P1M, a calendar month having no fixed
-  # length. Months is therefore slated for removal.
+  # not calendar-correct. from_iso8601 (via ISO8601::Reader) likewise reads
+  # weeks and days into mean months, and refuses P1M, a calendar month having no
+  # fixed length; to_iso8601 (via ISO8601::Writer) writes the mean month out in
+  # days, hours, minutes and seconds. Months is therefore slated for removal.
   class Months
     include Common
     include Relative
-    extend ISO8601
+    extend ISO8601::Reader
 
     def to_nanoseconds
       to_weeks.to_nanoseconds

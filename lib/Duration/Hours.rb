@@ -7,7 +7,7 @@ module Duration
   class Hours
     include Common
     include Relative
-    extend ISO8601
+    extend ISO8601::Reader
 
     def to_nanoseconds
       to_minutes.to_nanoseconds

@@ -4,6 +4,7 @@
 module Duration
   module Common
     include Comparable
+    include ISO8601::Writer
 
     def +(other)
       combine(:+, other)

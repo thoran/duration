@@ -88,7 +88,7 @@ Days.new(45)                # => Duration::Days(45)
 ```
 
 The classes keep their own names, so `inspect` is unchanged. `Common`, `Relative`,
-`ISO8601` and `VERSION` stay where they are: the first three are mixins rather than
+`ISO8601` and `VERSION` stay where they are: the first three are modules rather than
 classes, `Common` and `Relative` being what a type check names, and `VERSION` is a
 word an including program is likely to want for itself.
 
@@ -171,7 +171,7 @@ same name wins by include order alone. `Common` is the likeliest to be met twice
 5.minutes.to_hours.to_f         # => 0.08333333333333333
 ```
 
-### Parsing ISO 8601
+### ISO 8601
 
 Every unit reads an ISO 8601 duration, as APIs such as YouTube's give them, with
 `from_iso8601`. Any subset of weeks, days, hours, minutes and seconds is accepted,
@@ -198,6 +198,27 @@ average; `M` is minutes only after the `T`. Anything else which is not of the fo
 `P#W#DT#H#M#S` raises `ArgumentError` too, which includes a fraction (`PT1.5S`) and
 a sign (`-P1D`). `Months` reads weeks and days by the mean month, as its conversions
 do, and refuses `P1M` with the rest: a calendar month is not the mean month.
+
+Every duration writes itself back out with `to_iso8601`, leaving out what is zero:
+
+```ruby
+Duration::Seconds.new(3723).to_iso8601      # => "PT1H2M3S"
+Duration::Minutes.new(90).to_iso8601        # => "PT1H30M"
+Duration::Weeks.new(2).to_iso8601           # => "P14D"
+Duration::Seconds.new(0).to_iso8601         # => "PT0S"
+```
+
+Each quantity is taken whole through the units' own conversions, so what is written
+is read back as the duration it came from. Weeks are written as days, ISO 8601
+allowing them only alone or by its 2019 extension. A duration which is not a whole
+number of seconds, `Duration::Milliseconds.new(1500)` for one, raises
+`ArgumentError`, there being no fraction to write it with exactly, and so does a
+negative one, there being no sign. `Months` writes the mean month out in full:
+`Duration::Months.new(1).to_iso8601` is `"P30DT10H29M6S"`.
+
+Reading is a class method and writing an instance method, so `Duration::ISO8601`
+holds a mixin for each: `ISO8601::Reader`, which each unit extends, and
+`ISO8601::Writer`, which `Common` includes.
 
 ### Rendering
 

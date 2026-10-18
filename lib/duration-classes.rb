@@ -5,7 +5,7 @@
 # the counterpart to it: that one adds nine methods, this one nine constants.
 #
 # It takes only the classes.  Common, Relative, ISO8601 and VERSION stay where
-# they are, the first three being mixins rather than classes, Common and
+# they are, the first three being modules rather than classes, Common and
 # Relative being what a type check names, and VERSION being a word an including
 # program is likely to want for itself.
 #

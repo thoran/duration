@@ -1,5 +1,20 @@
 # duration/CHANGELOG
 
+## 20261019
+
+0.10.0: + to_iso8601 upon every unit, through Duration::ISO8601::Writer.
+
+1. + Duration::ISO8601::Writer#to_iso8601: the duration as P#DT#H#M#S, leaving out what is zero, and PT0S where all of it is, each quantity taken whole through the units' own conversions. A part second or a negative duration raises ArgumentError. No W, as ISO 8601 allows weeks only alone or by its 2019 extension.
+2. /Duration::ISO8601/Duration::ISO8601::Reader/: ISO8601 is now a namespace for the two mixins, as one module both extended and included would put every method upon both sides.
+3. ~ Duration::Common: + include ISO8601::Writer.
+4. ~ lib/Duration/{Nanoseconds,Microseconds,Milliseconds,Seconds,Minutes,Hours,Days,Weeks,Months}.rb: /extend ISO8601/extend ISO8601::Reader/
+5. ~ lib/Duration/Months.rb: + to the class comment, that to_iso8601 writes the mean month out.
+6. ~ lib/duration-classes.rb: /mixins rather than classes/modules rather than classes/
+7. ~ test/Duration/ISO8601_test.rb: /describe Duration::ISO8601/describe Duration::ISO8601::Reader/; + Duration::ISO8601::Writer#to_iso8601; + that each method is upon its own side only.
+8. ~ README.md: /Parsing ISO 8601/ISO 8601/, + to_iso8601 and the two mixins; ~ Naming the classes: /mixins rather than classes/modules rather than classes/.
+9. ~ Duration::VERSION: /0.9.0/0.10.0/
+
+
 ## 20261018
 
 0.9.0: + Duration::ISO8601, which gives every unit from_iso8601.

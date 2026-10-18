@@ -7,7 +7,7 @@ module Duration
   class Microseconds
     include Common
     include Relative
-    extend ISO8601
+    extend ISO8601::Reader
 
     def to_nanoseconds
       Duration::Nanoseconds.new(@microseconds * 1000)

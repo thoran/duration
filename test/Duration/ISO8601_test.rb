@@ -2,7 +2,7 @@
 
 require_relative '../test_helper'
 
-describe Duration::ISO8601 do
+describe Duration::ISO8601::Reader do
   describe ".from_iso8601" do
     it "is upon every unit" do
       units = Duration.constants.map{|name| Duration.const_get(name)}.select{|constant| constant.is_a?(Class)}
@@ -84,5 +84,78 @@ describe Duration::ISO8601 do
     it "keeps its helper private" do
       _(Duration::Seconds.respond_to?(:iso8601_components)).must_equal false
     end
+  end
+end
+
+describe Duration::ISO8601::Writer do
+  describe "#to_iso8601" do
+    it "is upon every unit" do
+      units = Duration.constants.map{|name| Duration.const_get(name)}.select{|constant| constant.is_a?(Class)}
+      _(units.all?{|unit| unit.new(1).respond_to?(:to_iso8601)}).must_equal true
+    end
+
+    it "writes hours, minutes and seconds" do
+      _(Duration::Seconds.new(3723).to_iso8601).must_equal 'PT1H2M3S'
+    end
+
+    it "leaves out what is zero" do
+      _(Duration::Minutes.new(90).to_iso8601).must_equal 'PT1H30M'
+      _(Duration::Days.new(1).to_iso8601).must_equal 'P1D'
+      _(Duration::Seconds.new(86401).to_iso8601).must_equal 'P1DT1S'
+      _(Duration::Hours.new(25).to_iso8601).must_equal 'P1DT1H'
+    end
+
+    it "writes zero as PT0S" do
+      _(Duration::Seconds.new(0).to_iso8601).must_equal 'PT0S'
+      _(Duration::Weeks.new(0).to_iso8601).must_equal 'PT0S'
+    end
+
+    it "writes weeks as days" do
+      _(Duration::Weeks.new(2).to_iso8601).must_equal 'P14D'
+    end
+
+    it "writes from any unit by its conversions" do
+      _(Duration::Milliseconds.new(1000).to_iso8601).must_equal 'PT1S'
+      _(Duration::Seconds.new(3600.0).to_iso8601).must_equal 'PT1H'
+      _(Duration::Minutes.new(Rational(3, 2)).to_iso8601).must_equal 'PT1M30S'
+    end
+
+    it "writes months as the mean month" do
+      _(Duration::Months.new(1).to_iso8601).must_equal 'P30DT10H29M6S'
+    end
+
+    it "refuses a part second" do
+      [Duration::Milliseconds.new(1500), Duration::Minutes.new(Rational(1, 7)), Duration::Seconds.new(0.5)].each do |duration|
+        error = _{duration.to_iso8601}.must_raise ArgumentError
+        _(error.message).must_match(/not a whole number of seconds/)
+      end
+    end
+
+    it "refuses a negative duration" do
+      error = _{Duration::Seconds.new(-1).to_iso8601}.must_raise ArgumentError
+      _(error.message).must_match(/negative/)
+    end
+
+    it "is read back as the duration written" do
+      [Duration::Seconds.new(3723), Duration::Days.new(9), Duration::Weeks.new(3), Duration::Months.new(2), Duration::Seconds.new(0)].each do |duration|
+        _(duration.class.from_iso8601(duration.to_iso8601)).must_equal duration
+      end
+    end
+
+    it "keeps its helpers private" do
+      _(Duration::Seconds.new(1).respond_to?(:iso8601_quantities)).must_equal false
+      _(Duration::Seconds.new(1).respond_to?(:iso8601_seconds)).must_equal false
+    end
+  end
+end
+
+describe Duration::ISO8601 do
+  it "puts each method upon its own side only" do
+    _(Duration::Seconds.respond_to?(:to_iso8601)).must_equal false
+    _(Duration::Seconds.new(1).respond_to?(:from_iso8601)).must_equal false
+  end
+
+  it "is a namespace, not a mixin" do
+    _(Duration::ISO8601.instance_methods).must_be_empty
   end
 end
