@@ -1,5 +1,20 @@
 # duration/CHANGELOG
 
+## 20261021
+
+0.11.0: ~ to_iso8601 writes a duration in its own terms, as the rest of the library does, rather than split into days, hours, minutes and seconds as in 0.10.0, which split: true still gives; + fractions to to_iso8601 and from_iso8601; + months to from_iso8601, into Months.
+
+1. ~ Duration::ISO8601::Writer#to_iso8601: writes the duration in its own unit's designator as it is held, PT90M and P2W, a unit smaller than a second in seconds, where 0.10.0 wrote PT1H30M and P14D. Splitting was the one default in the library which threw the unit away.
+2. + Duration::ISO8601::Writer#to_iso8601(split:): true splits into 0.10.0's days, hours, minutes and seconds; units given split into those, largest first. What remains after the last unit's whole part is written as a fraction upon it, where 0.10.0 refused any part second.
+3. + Duration::ISO8601::Writer#to_iso8601(fraction_digits): rounds the last component to that many places, as Time#iso8601 does. Without it a fraction with no finite decimal raises ArgumentError; a Float is taken as it prints.
+4. ~ Duration::ISO8601::Reader#from_iso8601: + a fraction upon the last component, with a full stop or a comma, as the standard allows.
+5. ~ Duration::ISO8601::Reader#from_iso8601: + M before the T, read into Months alone, as the mean month. Any other unit raises ArgumentError upon it, as every unit still does upon Y.
+6. ~ lib/Duration/Months.rb: the class comment, that from_iso8601 and to_iso8601 read and write M as the mean month.
+7. ~ test/Duration/ISO8601_test.rb: #to_iso8601 expects each unit's own designator; + split: true, split: units, fractions, fraction digits, and months into Months.
+8. ~ README.md: ISO 8601 rewritten for the above; + that the standard counts days and weeks as nominal, which here are 24 hours and seven days.
+9. ~ Duration::VERSION: /0.10.0/0.11.0/
+
+
 ## 20261019
 
 0.10.0: + to_iso8601 upon every unit, through Duration::ISO8601::Writer.

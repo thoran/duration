@@ -173,48 +173,82 @@ same name wins by include order alone. `Common` is the likeliest to be met twice
 
 ### ISO 8601
 
-Every unit reads an ISO 8601 duration, as APIs such as YouTube's give them, with
-`from_iso8601`. Any subset of weeks, days, hours, minutes and seconds is accepted,
-and the result is in the unit asked of.
+Every unit reads and writes ISO 8601 durations, as APIs such as YouTube's give
+them.
+
+`from_iso8601` reads one into the unit asked of. Any subset of weeks, days, hours,
+minutes and seconds is accepted, and the last of them may have a fraction, with a
+full stop or a comma.
 
 ```ruby
 Duration::Seconds.from_iso8601('PT1H2M3S')  # => Duration::Seconds(3723)
 Duration::Minutes.from_iso8601('PT1H2M3S')  # => Duration::Minutes((1241/20))
 Duration::Days.from_iso8601('P2W')          # => Duration::Days(14)
-Duration::Seconds.from_iso8601('P0D')       # => Duration::Seconds(0)
+Duration::Seconds.from_iso8601('PT1.5S')    # => Duration::Seconds((3/2))
+Duration::Months.from_iso8601('P1M')        # => Duration::Months(1)
 ```
 
 Each component written is made in its own unit and summed into the one asked of,
 so the result is what the conversions give: exact, and an `Integer` where they
-divide evenly. Seconds is the unit in which every such string is a whole number.
+divide evenly. It is a named constructor rather than a `String` accepted by `new`,
+so the constructor still takes a quantity and holds it, and a string in some other
+form is left free to have a constructor of its own.
 
-It is a named constructor rather than a `String` accepted by `new`, so the
-constructor still takes a quantity and holds it, and a string in some other form
-is left free to have a constructor of its own.
-
-A week is seven days and a day 24 hours, both being fixed lengths. Years and months
-are not, so `P1Y` and `P1M` raise `ArgumentError` rather than being counted by some
-average; `M` is minutes only after the `T`. Anything else which is not of the form
-`P#W#DT#H#M#S` raises `ArgumentError` too, which includes a fraction (`PT1.5S`) and
-a sign (`-P1D`). `Months` reads weeks and days by the mean month, as its conversions
-do, and refuses `P1M` with the rest: a calendar month is not the mean month.
-
-Every duration writes itself back out with `to_iso8601`, leaving out what is zero:
+`to_iso8601` writes a duration in its own unit's designator, as it is held, as the
+rest of the library keeps the unit and as `to_s` does in words:
 
 ```ruby
-Duration::Seconds.new(3723).to_iso8601      # => "PT1H2M3S"
-Duration::Minutes.new(90).to_iso8601        # => "PT1H30M"
-Duration::Weeks.new(2).to_iso8601           # => "P14D"
-Duration::Seconds.new(0).to_iso8601         # => "PT0S"
+Duration::Seconds.new(3723).to_iso8601      # => "PT3723S"
+Duration::Minutes.new(90).to_iso8601        # => "PT90M"
+Duration::Weeks.new(2).to_iso8601           # => "P2W"
+Duration::Months.new(1).to_iso8601          # => "P1M"
+Duration::Milliseconds.new(1500).to_iso8601 # => "PT1.5S"
 ```
 
-Each quantity is taken whole through the units' own conversions, so what is written
-is read back as the duration it came from. Weeks are written as days, ISO 8601
-allowing them only alone or by its 2019 extension. A duration which is not a whole
-number of seconds, `Duration::Milliseconds.new(1500)` for one, raises
-`ArgumentError`, there being no fraction to write it with exactly, and so does a
-negative one, there being no sign. `Months` writes the mean month out in full:
-`Duration::Months.new(1).to_iso8601` is `"P30DT10H29M6S"`.
+The standard allows a component past its carry-over point, so `PT90M` is as valid
+as `PT1H30M`. A unit smaller than a second, having no designator, is written in
+seconds.
+
+`split: true` splits it into days, hours, minutes and seconds instead, leaving out
+what is zero, as such strings are usually seen; and `split:` given units splits it
+into those, largest first:
+
+```ruby
+Duration::Seconds.new(3723).to_iso8601(split: true)       # => "PT1H2M3S"
+Duration::Weeks.new(2).to_iso8601(split: true)            # => "P14D"
+Duration::Seconds.new(0).to_iso8601(split: true)          # => "PT0S"
+Duration::Days.new(45).to_iso8601(split: %i{weeks days})  # => "P6W3D"
+```
+
+Split, a month is written out as the mean month, `"P30DT10H29M6S"`, unless
+`:months` is named. Whatever is written, split or not, is read back by the same
+unit as the duration it came from.
+
+Each unit but the last takes its whole part, through the units' own conversions,
+and the last takes what remains, so that only the last can have a fraction, as the
+standard requires. That fraction is written exactly where it has a finite
+decimal, `Duration::Milliseconds.new(1500)` as `PT1.5S`. One which has none raises
+`ArgumentError`, unless given the number of fraction digits to round it to, as
+`Time#iso8601` is:
+
+```ruby
+Duration::Minutes.new(1/7r).to_iso8601(3)              # => "PT0.143M"
+Duration::Minutes.new(1/7r).to_iso8601(3, split: true) # => "PT8.571S"
+```
+
+The rounding happens upon request and not before, as with `to_f`. A `Float` is
+taken as it prints. A negative duration raises `ArgumentError`, ISO 8601 having no
+sign.
+
+The standard counts years, months, weeks and days as nominal, their lengths
+depending upon the calendar: a calendar day runs 23 or 25 hours across a change of
+daylight saving. Here a day is 24 hours and a week seven days, as `Days` and
+`Weeks` have them, and as such strings almost always mean. A month here is the
+mean month, where the standard's `M` is a calendar month, so `M` is read only by
+`Months`, which has asked for the mean month by being `Months`; read into any other
+unit, `P1M` raises `ArgumentError` rather than having the mean month substituted
+for it. Years are refused everywhere, there being no `Years` to ask. `M` is minutes
+only after the `T`.
 
 Reading is a class method and writing an instance method, so `Duration::ISO8601`
 holds a mixin for each: `ISO8601::Reader`, which each unit extends, and
