@@ -224,7 +224,7 @@ Split, a month is written out as the mean month, `"P30DT10H29M6S"`, unless
 `:months` is named. Whatever is written, split or not, is read back by the same
 unit as the duration it came from.
 
-Each unit but the last takes its whole part, through the units' own conversions,
+It is split as `split` splits, below: each unit but the last takes its whole part
 and the last takes what remains, so that only the last can have a fraction, as the
 standard requires. That fraction is written exactly where it has a finite
 decimal, `Duration::Milliseconds.new(1500)` as `PT1.5S`. One which has none raises
@@ -314,6 +314,45 @@ both as `"45 days"`.
 # There is no unit of time squared, so this is refused rather than answered:
 5.minutes * 3.minutes           # => TypeError
 ```
+
+### Dividing and Splitting
+
+`divmod` and `%` are `Numeric#divmod` and `Numeric#%` for durations: how many whole
+times one duration goes into another, and what is left over. The quotient is a
+whole number, floored as `Numeric`'s is, and the remainder is a duration in the left
+operand's unit, as `+` and `-` leave it:
+
+```ruby
+3723.seconds.divmod(1.hour)     # => [1, Duration::Seconds(123)]
+3723.seconds % 1.hour           # => Duration::Seconds(123)
+45.days.divmod(1.week)          # => [6, Duration::Days(3)]
+3723.seconds.divmod(60)         # => TypeError (a bare number has no unit)
+```
+
+`split` breaks a duration into the unit classes given, largest first, and gives
+one duration for each, in its own unit:
+
+```ruby
+3723.seconds.split(Duration::Hours, Duration::Minutes, Duration::Seconds)
+                                # => [Duration::Hours(1), Duration::Minutes(2), Duration::Seconds(3)]
+45.days.split(Duration::Weeks, Duration::Days)
+                                # => [Duration::Weeks(6), Duration::Days(3)]
+90.5.minutes.split(Duration::Hours, Duration::Minutes)
+                                # => [Duration::Hours(1), Duration::Minutes(30.5)]
+```
+
+Each unit but the last takes its whole part, through the units' own conversions,
+and the last takes what remains exactly, fraction and all, so the parts always sum
+back to the whole:
+
+```ruby
+duration.split(*units).sum(Duration::Seconds.new(0)) == duration  # => true
+```
+
+The whole part is truncated rather than floored, unlike `divmod`'s quotient, so a
+negative duration splits into parts all of its own sign: -3723 seconds is -1 hour,
+-2 minutes and -3 seconds. A month takes part only when `Duration::Months` is
+named, and then as the mean month.
 
 ### Time Calculations
 ```ruby

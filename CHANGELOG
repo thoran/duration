@@ -2,6 +2,20 @@
 
 ## 20261021
 
+0.12.0: + divmod, % and split upon every unit, through Duration::Common; ~ to_iso8601(split:) splits through split.
+
+1. + Duration::Common#divmod: as Numeric#divmod, a whole number quotient, floored, and the remainder a duration in the left operand's unit. A non-duration raises TypeError.
+2. + Duration::Common#%: the remainder of divmod.
+3. + Duration::Common#split: the duration in the unit classes given, largest first, each but the last taking its whole part and the last what remains, so the parts sum to the whole. The whole part is truncated rather than floored, so a negative duration's parts all share its sign. Units not given as classes, largest first, raise ArgumentError.
+4. ~ Duration::ISO8601::Writer#iso8601_cascade: through Common#split.
+5. ~ Duration::ISO8601::Writer#to_iso8601: the comment, that it splits as Common#split does.
+6. + test/Duration/Common_test.rb: #divmod, #%, #split.
+7. ~ README.md: + Dividing and Splitting; ~ ISO 8601: that split: splits as split does.
+8. ~ Duration::VERSION: /0.11.0/0.12.0/
+
+
+## 20261021
+
 0.11.0: ~ to_iso8601 writes a duration in its own terms, as the rest of the library does, rather than split into days, hours, minutes and seconds as in 0.10.0, which split: true still gives; + fractions to to_iso8601 and from_iso8601; + months to from_iso8601, into Months.
 
 1. ~ Duration::ISO8601::Writer#to_iso8601: writes the duration in its own unit's designator as it is held, PT90M and P2W, a unit smaller than a second in seconds, where 0.10.0 wrote PT1H30M and P14D. Splitting was the one default in the library which threw the unit away.

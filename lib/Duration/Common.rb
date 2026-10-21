@@ -32,6 +32,39 @@ module Duration
       scale(:quo, other)
     end
 
+    # As Numeric#divmod: how many whole times another duration goes into this
+    # one, and what is left over, in this one's unit as + and - leave it.  The
+    # quotient is floored, as Numeric's is, so the remainder takes the sign of
+    # the duration divided by.
+    def divmod(other)
+      unless other.is_a?(Duration::Common)
+        raise TypeError, "can't divmod #{self.class} by #{other.class}"
+      end
+      quotient, remainder = quantity.divmod(other.send(:"to_#{unit}").quantity)
+      [quotient, self.class.new(remainder)]
+    end
+
+    def %(other)
+      divmod(other).last
+    end
+
+    # The duration broken into the unit classes given, largest first, as 3723
+    # seconds is an hour, two minutes and three seconds.  Each unit but the last
+    # takes its whole part, through the units' own conversions, and the last
+    # takes what remains exactly, so the parts always sum back to the whole.
+    # The whole part is truncated rather than floored, unlike divmod's
+    # quotient, so a negative duration splits into parts all of its own sign.
+    def split(*units)
+      split_validate(units)
+      rest = self
+      wholes = units[0...-1].map do |part_unit|
+        whole = part_unit.new((rest / part_unit.new(1)).truncate)
+        rest -= whole
+        whole
+      end
+      wholes << (units.last.new(0) + rest)
+    end
+
     def <=>(other)
       return nil unless other.is_a?(Duration::Common)
       quantity <=> other.send(:"to_#{unit}").quantity
@@ -89,6 +122,16 @@ module Duration
 
     def ratio(other)
       quantity.quo(other.send(:"to_#{unit}").quantity)
+    end
+
+    def split_validate(units)
+      unless units.any? && units.all?{|part_unit| split_unit?(part_unit)} && units.each_cons(2).all?{|larger, smaller| larger.new(1) > smaller.new(1)}
+        raise ArgumentError, "split wants unit classes, largest first"
+      end
+    end
+
+    def split_unit?(part_unit)
+      part_unit.is_a?(Class) && part_unit.include?(Duration::Common)
     end
   end
 end

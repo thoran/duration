@@ -70,6 +70,96 @@ describe Duration::Common do
     end
   end
 
+  describe "#divmod" do
+    it "gives the whole number of times and the duration left over" do
+      _(3723.seconds.divmod(1.hour)).must_equal [1, Duration::Seconds.new(123)]
+    end
+
+    it "gives a whole number as the quotient" do
+      _(45.days.divmod(1.week).first).must_be_kind_of Integer
+      _(90.5.minutes.divmod(1.hour).first).must_be_kind_of Integer
+    end
+
+    it "keeps the remainder in the left operand's unit" do
+      _(45.days.divmod(1.week).last).must_be_instance_of Duration::Days
+      _(1.hour.divmod(25.minutes).last).must_equal Duration::Hours.new(1/6r)
+    end
+
+    it "floors the quotient as Numeric#divmod does" do
+      _((-3723).seconds.divmod(1.hour)).must_equal [-2, Duration::Seconds.new(3477)]
+      _(3723.seconds.divmod(-1.hour)).must_equal [-2, Duration::Seconds.new(-3477)]
+    end
+
+    it "raises upon a zero duration" do
+      _{3723.seconds.divmod(0.hours)}.must_raise ZeroDivisionError
+    end
+
+    it "raises upon a non-duration" do
+      _{3723.seconds.divmod(60)}.must_raise TypeError
+    end
+  end
+
+  describe "#%" do
+    it "gives the duration left over" do
+      _(3723.seconds % 1.hour).must_equal Duration::Seconds.new(123)
+      _(3723.seconds % 1.hour).must_be_instance_of Duration::Seconds
+    end
+
+    it "raises upon a non-duration" do
+      _{3723.seconds % 60}.must_raise TypeError
+    end
+  end
+
+  describe "#split" do
+    it "splits into the units given, largest first" do
+      _(3723.seconds.split(Duration::Hours, Duration::Minutes, Duration::Seconds)).must_equal [Duration::Hours.new(1), Duration::Minutes.new(2), Duration::Seconds.new(3)]
+      _(45.days.split(Duration::Weeks, Duration::Days)).must_equal [Duration::Weeks.new(6), Duration::Days.new(3)]
+    end
+
+    it "gives each part in its own unit" do
+      parts = 3723.seconds.split(Duration::Hours, Duration::Minutes, Duration::Seconds)
+      _(parts.map(&:class)).must_equal [Duration::Hours, Duration::Minutes, Duration::Seconds]
+    end
+
+    it "gives what remains to the last unit, fraction and all" do
+      _(90.5.minutes.split(Duration::Hours, Duration::Minutes)).must_equal [Duration::Hours.new(1), Duration::Minutes.new(30.5)]
+      _(90.seconds.split(Duration::Minutes)).must_equal [Duration::Minutes.new(3/2r)]
+    end
+
+    it "sums back to the whole exactly" do
+      [3723.seconds, 45.days, 1.month, Duration::Minutes.new(1/7r), 1500.milliseconds].each do |duration|
+        _(duration.split(Duration::Days, Duration::Hours, Duration::Minutes, Duration::Seconds).sum(Duration::Seconds.new(0))).must_equal duration
+      end
+    end
+
+    it "gives zero to a unit the duration does not reach" do
+      _(3.seconds.split(Duration::Hours, Duration::Seconds)).must_equal [Duration::Hours.new(0), Duration::Seconds.new(3)]
+    end
+
+    it "takes months only when they are named" do
+      _(1.month.split(Duration::Days, Duration::Seconds)).must_equal [Duration::Days.new(30), Duration::Seconds.new(37746)]
+      _(45.days.split(Duration::Months, Duration::Days).first).must_equal Duration::Months.new(1)
+    end
+
+    it "splits a negative duration into parts all of its own sign" do
+      _((-3723).seconds.split(Duration::Hours, Duration::Minutes, Duration::Seconds)).must_equal [Duration::Hours.new(-1), Duration::Minutes.new(-2), Duration::Seconds.new(-3)]
+    end
+
+    it "raises upon no units" do
+      _{3723.seconds.split}.must_raise ArgumentError
+    end
+
+    it "raises upon units out of order" do
+      _{3723.seconds.split(Duration::Minutes, Duration::Hours)}.must_raise ArgumentError
+      _{3723.seconds.split(Duration::Minutes, Duration::Minutes)}.must_raise ArgumentError
+    end
+
+    it "raises upon anything but a unit class" do
+      _{3723.seconds.split(:hours, :minutes)}.must_raise ArgumentError
+      _{3723.seconds.split(String)}.must_raise ArgumentError
+    end
+  end
+
   describe "comparison" do
     it "compares durations of different units exactly" do
       _(5.minutes).must_equal 300.seconds

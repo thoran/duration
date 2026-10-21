@@ -68,9 +68,9 @@ module Duration
       # unit smaller than a second having none and so being written in seconds.
       # split: true splits it into days, hours, minutes and seconds instead, as
       # PT1H2M3S, and split: given units into those, largest first, leaving out
-      # what is zero.  Each unit but the last takes its whole part, through the
-      # units' own conversions, and the last takes what remains, so that only the
-      # last can have a fraction, as the standard requires.  That fraction is
+      # what is zero.  It is split as Common#split splits, each unit but the last
+      # taking its whole part and the last what remains, so that only the last
+      # can have a fraction, as the standard requires.  That fraction is
       # written exactly where it has a finite decimal, and otherwise only when
       # given the number of fraction digits to round it to, as Time#iso8601 is.
       # A negative duration is refused, ISO 8601 having no sign.
@@ -111,13 +111,7 @@ module Duration
       end
 
       def iso8601_cascade(units)
-        rest = iso8601_exact
-        wholes = units[0...-1].map do |part_unit|
-          whole = rest.send(:"to_#{part_unit}").quantity.floor
-          rest -= Duration.const_get(part_unit.capitalize).new(whole)
-          whole
-        end
-        wholes << rest.send(:"to_#{units.last}").quantity
+        iso8601_exact.split(*units.map{|part_unit| Duration.const_get(part_unit.capitalize)}).map{|part| part.quantity}
       end
 
       # A Float is taken as it prints, not as the binary fraction it holds.
