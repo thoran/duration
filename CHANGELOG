@@ -2,6 +2,11 @@
 
 ## 20261021
 
+0.12.1: + test that ago and hence reverse for a negative duration.
+
+1. ~ test/Duration/Seconds_test.rb: + that a negative duration's ago is in the future and its hence in the past.
+2. ~ Duration::VERSION: /0.12.0/0.12.1/
+
 0.12.0: + divmod, % and split upon every unit, through Duration::Common; ~ to_iso8601(split:) splits through split.
 
 1. + Duration::Common#divmod: as Numeric#divmod, a whole number quotient, floored, and the remainder a duration in the left operand's unit. A non-duration raises TypeError.
@@ -12,9 +17,6 @@
 6. + test/Duration/Common_test.rb: #divmod, #%, #split.
 7. ~ README.md: + Dividing and Splitting; ~ ISO 8601: that split: splits as split does.
 8. ~ Duration::VERSION: /0.11.0/0.12.0/
-
-
-## 20261021
 
 0.11.0: ~ to_iso8601 writes a duration in its own terms, as the rest of the library does, rather than split into days, hours, minutes and seconds as in 0.10.0, which split: true still gives; + fractions to to_iso8601 and from_iso8601; + months to from_iso8601, into Months.
 

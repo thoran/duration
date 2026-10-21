@@ -83,5 +83,11 @@ describe Duration::Seconds do
       _(time_hence).must_be_instance_of Time
       _(time_hence - Time.now).must_be_close_to 30.0, 1.0
     end
+
+    it "reverses ago and hence for a negative duration" do
+      secs = Duration::Seconds.new(-30)
+      _(secs.ago - Time.now).must_be_close_to 30.0, 1.0
+      _(Time.now - secs.hence).must_be_close_to 30.0, 1.0
+    end
   end
 end
