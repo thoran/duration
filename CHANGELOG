@@ -1,5 +1,16 @@
 # duration/CHANGELOG
 
+## 20261022
+
+0.13.0: + floor, ceil, round and truncate upon every unit, through Duration::Common.
+
+1. + Duration::Common#floor, #ceil, #truncate: as Numeric's, to a whole number of the duration's own unit, or, given a duration, to a whole multiple of it, in the left operand's unit. A bare number raises TypeError, since to Numeric it would mean digits.
+2. + Duration::Common#round: as the others, with half: deciding a tie as Numeric#round's does, counted in steps.
+3. + test/Duration/Common_test.rb: #floor, #ceil, #round, #truncate.
+4. ~ README.md: + Rounding.
+5. ~ Duration::VERSION: /0.12.1/0.13.0/
+
+
 ## 20261021
 
 0.12.1: + test that ago and hence reverse for a negative duration.

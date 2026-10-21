@@ -65,6 +65,29 @@ module Duration
       wholes << (units.last.new(0) + rest)
     end
 
+    # As Numeric#floor: to a whole number of this duration's own unit, or,
+    # given a duration, to a whole multiple of that, in this one's unit as + and
+    # - leave it.  A bare number is refused, since to Numeric it would mean
+    # digits, and here it could as well mean a quantity of some unit.
+    def floor(step = nil)
+      approximate(:floor, step)
+    end
+
+    def ceil(step = nil)
+      approximate(:ceil, step)
+    end
+
+    # half: decides a tie, as Numeric#round's does.  It counts in steps, so
+    # :even goes to an even number of them rather than of this unit.
+    def round(step = nil, half: nil)
+      approximate(:round, step, half: half)
+    end
+
+    # Towards zero, where floor goes downward, as split takes its whole parts.
+    def truncate(step = nil)
+      approximate(:truncate, step)
+    end
+
     def <=>(other)
       return nil unless other.is_a?(Duration::Common)
       quantity <=> other.send(:"to_#{unit}").quantity
@@ -122,6 +145,17 @@ module Duration
 
     def ratio(other)
       quantity.quo(other.send(:"to_#{unit}").quantity)
+    end
+
+    # The step is taken into this unit before it is scaled, so the result is in
+    # this unit and exact, the whole number of steps being exact whatever the
+    # quantity.
+    def approximate(method, step, **options)
+      step ||= self.class.new(1)
+      unless step.is_a?(Duration::Common)
+        raise TypeError, "can't #{method} #{self.class} to #{step.class}"
+      end
+      step.send(:"to_#{unit}") * ratio(step).send(method, **options)
     end
 
     def split_validate(units)

@@ -354,6 +354,45 @@ negative duration splits into parts all of its own sign: -3723 seconds is -1 hou
 -2 minutes and -3 seconds. A month takes part only when `Duration::Months` is
 named, and then as the mean month.
 
+### Rounding
+
+`floor`, `ceil`, `round` and `truncate` are `Numeric`'s, for durations. Given
+nothing, they go to a whole number of the duration's own unit; given a duration,
+to a whole multiple of it. The result is in the left operand's unit, as `+`, `-`
+and `%` leave it, and exact:
+
+```ruby
+Duration::Hours.new(3/2r).floor     # => Duration::Hours(1)
+97.minutes.floor(15.minutes)        # => Duration::Minutes(90)
+97.minutes.ceil(15.minutes)         # => Duration::Minutes(105)
+5400.seconds.floor(1.hour)          # => Duration::Seconds(3600)
+1.hour.floor(7.minutes)             # => Duration::Hours((14/15))
+97.minutes.floor(15)                # => TypeError
+```
+
+A bare number is refused: to `Numeric` it would mean digits, and here it could as
+well mean a quantity of some unit.
+
+`floor` goes downward and `truncate` towards zero, as `split` takes its whole
+parts, so the two differ for a negative duration:
+
+```ruby
+-97.minutes.floor(15.minutes)       # => Duration::Minutes(-105)
+-97.minutes.truncate(15.minutes)    # => Duration::Minutes(-90)
+```
+
+`round` takes `half:`, as `Numeric#round` does, to decide a tie. 45 minutes is
+halfway between 30 and 60, so goes to 60, away from zero, unless told otherwise.
+The tie is counted in steps, so `:even` goes to an even number of them, not of
+minutes:
+
+```ruby
+45.minutes.round(30.minutes)                # => Duration::Minutes(60)
+45.minutes.round(30.minutes, half: :down)   # => Duration::Minutes(30)
+45.minutes.round(30.minutes, half: :even)   # => Duration::Minutes(60)
+75.minutes.round(30.minutes, half: :even)   # => Duration::Minutes(60)
+```
+
 ### Time Calculations
 ```ruby
 # The past

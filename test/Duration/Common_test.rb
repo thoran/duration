@@ -160,6 +160,108 @@ describe Duration::Common do
     end
   end
 
+  describe "#floor" do
+    it "floors to a whole multiple of the duration given" do
+      _(97.minutes.floor(15.minutes)).must_equal Duration::Minutes.new(90)
+    end
+
+    it "floors to a whole number of its own unit when given none" do
+      _(Duration::Hours.new(3/2r).floor).must_equal Duration::Hours.new(1)
+    end
+
+    it "keeps the left operand's unit" do
+      _(5400.seconds.floor(1.hour)).must_be_instance_of Duration::Seconds
+      _(5400.seconds.floor(1.hour)).must_equal Duration::Seconds.new(3600)
+    end
+
+    it "stays exact" do
+      _(1.hour.floor(7.minutes).inspect).must_equal 'Duration::Hours((14/15))'
+    end
+
+    it "floors a negative duration downward" do
+      _((-97).minutes.floor(15.minutes)).must_equal Duration::Minutes.new(-105)
+    end
+
+    it "raises upon a zero duration" do
+      _{97.minutes.floor(0.minutes)}.must_raise ZeroDivisionError
+    end
+
+    it "raises upon a non-duration" do
+      _{97.minutes.floor(15)}.must_raise TypeError
+    end
+  end
+
+  describe "#ceil" do
+    it "ceils to a whole multiple of the duration given" do
+      _(97.minutes.ceil(15.minutes)).must_equal Duration::Minutes.new(105)
+    end
+
+    it "ceils to a whole number of its own unit when given none" do
+      _(Duration::Hours.new(3/2r).ceil).must_equal Duration::Hours.new(2)
+    end
+
+    it "ceils a negative duration upward" do
+      _((-97).minutes.ceil(15.minutes)).must_equal Duration::Minutes.new(-90)
+    end
+
+    it "raises upon a non-duration" do
+      _{97.minutes.ceil(15)}.must_raise TypeError
+    end
+  end
+
+  describe "#round" do
+    it "rounds to the nearest multiple of the duration given" do
+      _(97.minutes.round(15.minutes)).must_equal Duration::Minutes.new(90)
+      _(98.minutes.round(15.minutes)).must_equal Duration::Minutes.new(105)
+    end
+
+    it "rounds to a whole number of its own unit when given none" do
+      _(Duration::Hours.new(5/2r).round).must_equal Duration::Hours.new(3)
+    end
+
+    it "rounds a tie away from zero, as Numeric#round does" do
+      _(45.minutes.round(30.minutes)).must_equal Duration::Minutes.new(60)
+      _((-45).minutes.round(30.minutes)).must_equal Duration::Minutes.new(-60)
+    end
+
+    it "decides a tie by half:" do
+      _(45.minutes.round(30.minutes, half: :down)).must_equal Duration::Minutes.new(30)
+      _(Duration::Hours.new(5/2r).round(half: :even)).must_equal Duration::Hours.new(2)
+    end
+
+    it "counts in steps, so half: :even goes to an even number of them" do
+      _(15.minutes.round(30.minutes, half: :even)).must_equal Duration::Minutes.new(0)
+      _(45.minutes.round(30.minutes, half: :even)).must_equal Duration::Minutes.new(60)
+      _(75.minutes.round(30.minutes, half: :even)).must_equal Duration::Minutes.new(60)
+    end
+
+    it "rounds a Float to a whole number of steps" do
+      _(97.5.minutes.round(15.minutes)).must_equal Duration::Minutes.new(105)
+    end
+
+    it "raises upon a non-duration" do
+      _{97.minutes.round(15)}.must_raise TypeError
+    end
+  end
+
+  describe "#truncate" do
+    it "truncates to a whole multiple of the duration given" do
+      _(97.minutes.truncate(15.minutes)).must_equal Duration::Minutes.new(90)
+    end
+
+    it "truncates to a whole number of its own unit when given none" do
+      _(Duration::Hours.new(-3/2r).truncate).must_equal Duration::Hours.new(-1)
+    end
+
+    it "truncates a negative duration toward zero, where floor goes downward" do
+      _((-97).minutes.truncate(15.minutes)).must_equal Duration::Minutes.new(-90)
+    end
+
+    it "raises upon a non-duration" do
+      _{97.minutes.truncate(15)}.must_raise TypeError
+    end
+  end
+
   describe "comparison" do
     it "compares durations of different units exactly" do
       _(5.minutes).must_equal 300.seconds
