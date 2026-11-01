@@ -22,10 +22,10 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.5'
 
   spec.files = [
+    'duration.rb.gemspec',
     Dir['lib/**/*.rb'],
     Dir['test/**/*.rb'],
     'CHANGELOG',
-    'duration.rb.gemspec',
     'Gemfile',
     'LICENSE',
     'Rakefile',
