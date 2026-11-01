@@ -89,5 +89,14 @@ describe Duration::Seconds do
       _(secs.ago - Time.now).must_be_close_to 30.0, 1.0
       _(Time.now - secs.hence).must_be_close_to 30.0, 1.0
     end
+
+    # A third of a second has no Float, so a Time reached through to_f has a
+    # subsecond whose denominator is a power of two, where an exact one keeps
+    # the three.
+    it "calculates ago and hence exactly" do
+      secs = Duration::Seconds.new(1/3r)
+      _(secs.ago.subsec.denominator % 3).must_equal 0
+      _(secs.hence.subsec.denominator % 3).must_equal 0
+    end
   end
 end

@@ -37,7 +37,7 @@ precision and never silently discards it.
 
 ```ruby
 Duration::Minutes.new(5).to_hours.to_f   # => 0.08333333333333333
-Duration::Minutes.new(5).to_hours        # holds exactly 1/12, not 0.0833...
+Duration::Minutes.new(5).to_hours.to_r   # => (1/12), not 0.0833...
 (Duration::Hours.new(1) - Duration::Minutes.new(50)).to_minutes.to_f
                                          # => 10.0 exactly (no float drift)
 ```
@@ -161,6 +161,7 @@ same name wins by include order alone. `Common` is the likeliest to be met twice
 # The number is in the unit's own terms, not a base:
 30.minutes.to_i         # => 30 (not 1800)
 30.minutes.to_f         # => 30.0
+30.minutes.to_r         # => (30/1)
 
 # Convert between units. The result is exact (a Rational internally) when the
 # input is exact; call to_f at the edge for a float.
@@ -169,6 +170,7 @@ same name wins by include order alone. `Common` is the likeliest to be met twice
 1.5.hours.to_minutes.to_i       # => 90
 1.day.to_seconds.to_i           # => 86400
 5.minutes.to_hours.to_f         # => 0.08333333333333333
+5.minutes.to_hours.to_r         # => (1/12), the exact quantity to_f rounds
 ```
 
 ### ISO 8601
@@ -396,25 +398,25 @@ minutes:
 ### Time Calculations
 ```ruby
 # The past
-2.seconds.ago                   # => #<Time:> (now - 2.seconds.to_seconds.to_f)
-3.minutes.ago                   # => #<Time:> (now - 3.minutes.to_seconds.to_f)
-4.hours.ago                     # => #<Time:> (now - 4.hours.to_seconds.to_f)
-5.days.ago                      # => #<Time:> (now - 5.days.to_seconds.to_f)
-6.weeks.ago                     # => #<Time:> (now - 6.weeks.to_seconds.to_f)
+2.seconds.ago                   # => #<Time:> (now - 2.seconds.to_seconds.to_r)
+3.minutes.ago                   # => #<Time:> (now - 3.minutes.to_seconds.to_r)
+4.hours.ago                     # => #<Time:> (now - 4.hours.to_seconds.to_r)
+5.days.ago                      # => #<Time:> (now - 5.days.to_seconds.to_r)
+6.weeks.ago                     # => #<Time:> (now - 6.weeks.to_seconds.to_r)
 
 # Months too, but by the Gregorian mean month rather than a calendar month, so
 # the result is approximate. See A Note on Months below.
-6.months.ago                    # => #<Time:> (now - 6.months.to_seconds.to_f)
+6.months.ago                    # => #<Time:> (now - 6.months.to_seconds.to_r)
 
 # The future
-2.seconds.hence                 # => #<Time:> (now + 2.seconds.to_seconds.to_f)
-3.minutes.hence                 # => #<Time:> (now + 3.minutes.to_seconds.to_f)
-4.hours.hence                   # => #<Time:> (now + 4.hours.to_seconds.to_f)
-5.days.hence                    # => #<Time:> (now + 5.days.to_seconds.to_f)
-6.weeks.hence                   # => #<Time:> (now + 6.weeks.to_seconds.to_f)
+2.seconds.hence                 # => #<Time:> (now + 2.seconds.to_seconds.to_r)
+3.minutes.hence                 # => #<Time:> (now + 3.minutes.to_seconds.to_r)
+4.hours.hence                   # => #<Time:> (now + 4.hours.to_seconds.to_r)
+5.days.hence                    # => #<Time:> (now + 5.days.to_seconds.to_r)
+6.weeks.hence                   # => #<Time:> (now + 6.weeks.to_seconds.to_r)
 
 # Again by the mean month, and so approximate:
-6.months.hence                  # => #<Time:> (now + 6.months.to_seconds.to_f)
+6.months.hence                  # => #<Time:> (now + 6.months.to_seconds.to_r)
 ```
 
 ### A Note on Months

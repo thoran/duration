@@ -291,6 +291,34 @@ describe Duration::Common do
     end
   end
 
+  describe "#to_r" do
+    it "gives the quantity exactly, in the duration's own unit" do
+      _(5.minutes.to_hours.to_r).must_equal 1/12r
+      _(90.seconds.to_r).must_equal 90r
+    end
+
+    it "gives a Rational for an Integer quantity" do
+      _(30.minutes.to_r).must_be_instance_of Rational
+    end
+
+    it "gives what to_i truncates and to_f rounds" do
+      d = Duration::Minutes.new(1/3r)
+      _(d.to_i).must_equal 0
+      _(d.to_f.to_r).wont_equal d.to_r
+      _(d.to_r).must_equal 1/3r
+    end
+
+    it "gives the binary fraction a Float holds" do
+      _(Duration::Seconds.new(0.1).to_r).must_equal 0.1.to_r
+    end
+
+    it "is upon every unit" do
+      Duration.constants.map{|name| Duration.const_get(name)}.select{|constant| constant.is_a?(Class) && constant.include?(Duration::Common)}.each do |unit_class|
+        _(unit_class.new(3).to_r).must_equal 3r
+      end
+    end
+  end
+
   describe "#to_s" do
     it "names the quantity and the unit" do
       _(45.days.to_s).must_equal '45 days'

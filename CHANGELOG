@@ -1,5 +1,18 @@
 # duration/CHANGELOG
 
+## 20261109
+
+0.14.0: + Duration::Common#to_r
+
+1. + Duration::Common#to_r: The quantity exactly, in the duration's own unit. to_i truncates it and to_f rounds it, and quantity is protected, so nothing public gave it.
+2. ~ Duration::Relative#ago, #hence: They go through to_r rather than to_f, so a Time is reached exactly.
+3. ~ test/Duration/Common_test.rb: #to_r is tested.
+4. ~ test/Duration/Seconds_test.rb: An exact ago and hence are tested.
+5. ~ duration.rb.gemspec: The gemspec heads spec.files, ahead of the Dir globs.
+6. ~ README.md: Conversions and Time Calculations show to_r.
+7. ~ Duration::VERSION: /0.13.0/0.14.0/
+
+
 ## 20261022
 
 0.13.0: + floor, ceil, round and truncate upon every unit, through Duration::Common.

@@ -93,6 +93,13 @@ module Duration
       quantity <=> other.send(:"to_#{unit}").quantity
     end
 
+    # The quantity exactly, in this duration's own unit, where to_i truncates it
+    # and to_f rounds it.  A Float gives the binary fraction it holds, as
+    # Float#to_r does, this library discarding no precision it was given.
+    def to_r
+      quantity.to_r
+    end
+
     # The unit is the class, so naming it says which duration this is without
     # repeating the class: 45 days rather than #<Duration::Days:0x000... The
     # quantity is rendered as it is held, an exact Rational staying exact, this
